@@ -1,0 +1,44 @@
+{
+    "name": "delivering/delivery",
+    "description": "Provider-neutral outbound delivery component for the Smart Responsor ecosystem",
+    "type": "symfony-bundle",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4",
+        "doctrine/orm": "^3.3",
+        "psr/log": "^3.0",
+        "symfony/dependency-injection": "^8.1",
+        "symfony/doctrine-messenger": "^8.1",
+        "symfony/framework-bundle": "^8.1",
+        "symfony/http-client": "^8.1",
+        "symfony/http-foundation": "^8.1",
+        "symfony/http-kernel": "^8.1",
+        "symfony/messenger": "^8.1",
+        "symfony/routing": "^8.1",
+        "symfony/uid": "^8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Delivering\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Delivering\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "@php vendor/bin/phpunit --configuration phpunit.xml.dist"
+    },
+    "extra": {
+        "symfony": {
+            "require": "8.0.*"
+        }
+    }
+}

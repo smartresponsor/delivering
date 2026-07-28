@@ -1,0 +1,4 @@
+delivering_controllers:
+    resource: '../src/Controller/'
+    type: attribute
+

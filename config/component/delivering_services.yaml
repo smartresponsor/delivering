@@ -1,0 +1,44 @@
+parameters:
+    delivering.telnyx.api_key: ''
+    delivering.telnyx.from: ''
+    delivering.telnyx.public_key: ''
+    delivering.telnyx.manager_recipient: ''
+    delivering.messenger.async_dsn: 'doctrine://postgres?queue_name=delivering'
+    delivering.messenger.failed_dsn: 'doctrine://postgres?queue_name=delivering_failed'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Delivering\:
+        resource: '../../src/'
+        exclude:
+            - '../../src/DeliveringBundle.php'
+
+    App\Delivering\Provider\Telnyx\DeliveringTelnyxSmsSender:
+        arguments:
+            $apiKey: '%env(default:delivering.telnyx.api_key:DELIVERING_TELNYX_API_KEY)%'
+            $sender: '%env(default:delivering.telnyx.from:DELIVERING_TELNYX_FROM)%'
+
+    App\Delivering\Provider\Telnyx\DeliveringTelnyxWebhookSignatureVerifier:
+        arguments:
+            $publicKey: '%env(default:delivering.telnyx.public_key:DELIVERING_TELNYX_PUBLIC_KEY)%'
+
+    App\Delivering\Provider\Telnyx\DeliveringTelnyxConversationNotificationParser:
+        arguments:
+            $managerRecipient: '%env(default:delivering.telnyx.manager_recipient:DELIVERING_TELNYX_MANAGER_RECIPIENT)%'
+
+    App\Delivering\ServiceInterface\Command\Receipt\DeliveringReceiptRecorderInterface:
+        alias: App\Delivering\Service\Command\Receipt\DeliveringDoctrineReceiptRecorder
+
+    App\Delivering\ServiceInterface\Command\Delivery\DeliveringSmsSenderInterface:
+        alias: App\Delivering\Provider\Telnyx\DeliveringTelnyxSmsSender
+
+    App\Delivering\ServiceInterface\Query\Queue\DeliveringQueueStatusProviderInterface:
+        alias: App\Delivering\Service\Query\Queue\DeliveringMessengerQueueStatusProvider
+
+    App\Delivering\Service\Query\Queue\DeliveringMessengerQueueStatusProvider:
+        arguments:
+            $asyncReceiver: '@messenger.transport.delivering_async'
+            $failedReceiver: '@messenger.transport.delivering_failed'
