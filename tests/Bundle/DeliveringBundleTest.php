@@ -55,6 +55,10 @@ final class DeliveringBundleTest extends TestCase
             'delivering_async',
             $messenger['routing']['App\\Delivering\\Message\\DeliveringSendSms'],
         );
+        self::assertSame(
+            'delivering_async',
+            $messenger['routing']['App\\Delivering\\Message\\DeliveringSendPush'],
+        );
     }
 
     public function testPrependDoesNothingWhenHostExtensionsAreUnavailable(): void
