@@ -72,6 +72,9 @@ services:
     App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushSenderInterface:
         alias: App\Delivering\Service\Command\Delivery\DeliveringPushSenderRouter
 
+    App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushTokenResolverInterface:
+        alias: App\Delivering\Service\Command\Delivery\DeliveringUnavailablePushTokenResolver
+
     App\Delivering\Service\Command\Delivery\DeliveringPushSenderRouter:
         arguments:
             $providers: !tagged_iterator delivering.push_provider

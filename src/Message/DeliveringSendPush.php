@@ -13,7 +13,7 @@ final readonly class DeliveringSendPush
     /** @param array<string, mixed> $payload */
     public function __construct(
         public string $platform,
-        public string $token,
+        public string $tokenHash,
         public string $appKey,
         public string $title,
         public string $body,
@@ -25,8 +25,8 @@ final readonly class DeliveringSendPush
         if (!in_array($platform, ['ios', 'android'], true)) {
             throw new InvalidArgumentException('Push platform must be ios or android.');
         }
-        if ('' === trim($token)) {
-            throw new InvalidArgumentException('Push token cannot be empty.');
+        if (!preg_match('/^[a-f0-9]{64}$/', $tokenHash)) {
+            throw new InvalidArgumentException('Push tokenHash must be a lowercase SHA-256 hex digest.');
         }
         if ('' === trim($appKey)) {
             throw new InvalidArgumentException('Push appKey cannot be empty.');
@@ -45,5 +45,10 @@ final readonly class DeliveringSendPush
     public function provider(): string
     {
         return 'ios' === $this->platform ? 'apns' : 'fcm';
+    }
+
+    public function tokenReference(): string
+    {
+        return 'token-sha256:'.$this->tokenHash;
     }
 }
