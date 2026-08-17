@@ -60,6 +60,7 @@ final class DeliveringFcmPushProvider implements DeliveringPushProviderInterface
             ]);
             $statusCode = $response->getStatusCode();
             $content = $response->getContent(false);
+            $headers = $response->getHeaders(false);
         } catch (TransportExceptionInterface $exception) {
             throw new DeliveringTransportException('FCM transport request failed.', 0, $exception);
         }
@@ -67,7 +68,14 @@ final class DeliveringFcmPushProvider implements DeliveringPushProviderInterface
             $errorCode = $this->fcmErrorCode($content);
             $message = DeliveringPushFailureClassifier::label('FCM', $statusCode, $errorCode);
             if (DeliveringPushFailureClassifier::fcmIsTransient($statusCode, $errorCode)) {
-                throw new DeliveringTransportException($message);
+                throw new DeliveringTransportException(
+                    $message,
+                    retryDelay: DeliveringPushFailureClassifier::fcmRetryDelayMilliseconds(
+                        $statusCode,
+                        $errorCode,
+                        $headers['retry-after'][0] ?? null,
+                    ),
+                );
             }
             throw new DeliveringPermanentTransportException(
                 $message,
@@ -115,13 +123,21 @@ final class DeliveringFcmPushProvider implements DeliveringPushProviderInterface
             ]);
             $statusCode = $response->getStatusCode();
             $content = $response->getContent(false);
+            $headers = $response->getHeaders(false);
         } catch (TransportExceptionInterface $exception) {
             throw new DeliveringTransportException('FCM OAuth token request failed.', 0, $exception);
         }
         if ($statusCode < 200 || $statusCode >= 300) {
             $message = sprintf('FCM OAuth token request failed with HTTP %d.', $statusCode);
             if (DeliveringPushFailureClassifier::fcmIsTransient($statusCode, null)) {
-                throw new DeliveringTransportException($message);
+                throw new DeliveringTransportException(
+                    $message,
+                    retryDelay: DeliveringPushFailureClassifier::fcmRetryDelayMilliseconds(
+                        $statusCode,
+                        null,
+                        $headers['retry-after'][0] ?? null,
+                    ),
+                );
             }
             throw new DeliveringPermanentTransportException($message);
         }

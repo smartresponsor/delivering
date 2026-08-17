@@ -78,7 +78,12 @@ final readonly class DeliveringApnsPushProvider implements DeliveringPushProvide
             $reason = is_array($decoded) && is_string($decoded['reason'] ?? null) ? $decoded['reason'] : null;
             $message = DeliveringPushFailureClassifier::label('APNs', $statusCode, $reason);
             if (DeliveringPushFailureClassifier::apnsIsTransient($statusCode, $reason)) {
-                throw new DeliveringTransportException($message);
+                throw new DeliveringTransportException(
+                    $message,
+                    retryDelay: DeliveringPushFailureClassifier::apnsRetryDelayMilliseconds(
+                        $headers['retry-after'][0] ?? null,
+                    ),
+                );
             }
             throw new DeliveringPermanentTransportException(
                 $message,

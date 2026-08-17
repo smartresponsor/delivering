@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\Tests\Provider\Push;
 
+use App\Delivering\Exception\DeliveringTransportException;
 use App\Delivering\Provider\Push\DeliveringPushFailureClassifier;
 use PHPUnit\Framework\TestCase;
 
@@ -37,6 +38,33 @@ final class DeliveringPushFailureClassifierTest extends TestCase
         self::assertTrue(DeliveringPushFailureClassifier::apnsInvalidatesRecipient('BadDeviceToken'));
         self::assertTrue(DeliveringPushFailureClassifier::apnsInvalidatesRecipient('DeviceTokenNotForTopic'));
         self::assertFalse(DeliveringPushFailureClassifier::apnsInvalidatesRecipient('Forbidden'));
+    }
+
+    public function testRetryAfterAndQuotaBackoffAreConvertedForMessenger(): void
+    {
+        self::assertSame(60_000, DeliveringPushFailureClassifier::fcmRetryDelayMilliseconds(429, 'QUOTA_EXCEEDED', null));
+        self::assertSame(120_000, DeliveringPushFailureClassifier::fcmRetryDelayMilliseconds(429, 'QUOTA_EXCEEDED', '120'));
+        self::assertSame(15_000, DeliveringPushFailureClassifier::fcmRetryDelayMilliseconds(503, 'UNAVAILABLE', '15'));
+        self::assertNull(DeliveringPushFailureClassifier::fcmRetryDelayMilliseconds(503, 'UNAVAILABLE', null));
+        self::assertSame(30_000, DeliveringPushFailureClassifier::apnsRetryDelayMilliseconds('30'));
+        self::assertSame(
+            90_000,
+            DeliveringPushFailureClassifier::fcmRetryDelayMilliseconds(
+                503,
+                'UNAVAILABLE',
+                'Mon, 17 Aug 2026 19:31:30 GMT',
+                1_786_995_000,
+            ),
+        );
+        self::assertNull(DeliveringPushFailureClassifier::apnsRetryDelayMilliseconds('not-a-date'));
+    }
+
+    public function testRecoverableTransportExceptionExposesMessengerRetryDelay(): void
+    {
+        $exception = new DeliveringTransportException('retry later', retryDelay: 60_000);
+
+        self::assertSame(60_000, $exception->getRetryDelay());
+        self::assertFalse($exception->forceRetry());
     }
 
     public function testFailureLabelsDoNotContainProviderResponseBodies(): void
