@@ -64,8 +64,9 @@ final class DeliveringFcmPushProvider implements DeliveringPushProviderInterface
             throw new DeliveringTransportException('FCM transport request failed.', 0, $exception);
         }
         if ($statusCode < 200 || $statusCode >= 300) {
-            $message = sprintf('FCM rejected the push request with HTTP %d: %s', $statusCode, $content);
-            if ($statusCode >= 500 || in_array($statusCode, [408, 429], true)) {
+            $errorCode = $this->fcmErrorCode($content);
+            $message = DeliveringPushFailureClassifier::label('FCM', $statusCode, $errorCode);
+            if (DeliveringPushFailureClassifier::fcmIsTransient($statusCode, $errorCode)) {
                 throw new DeliveringTransportException($message);
             }
             throw new DeliveringPermanentTransportException($message);
@@ -114,7 +115,11 @@ final class DeliveringFcmPushProvider implements DeliveringPushProviderInterface
             throw new DeliveringTransportException('FCM OAuth token request failed.', 0, $exception);
         }
         if ($statusCode < 200 || $statusCode >= 300) {
-            throw new DeliveringPermanentTransportException(sprintf('FCM OAuth token request failed with HTTP %d: %s', $statusCode, $content));
+            $message = sprintf('FCM OAuth token request failed with HTTP %d.', $statusCode);
+            if (DeliveringPushFailureClassifier::fcmIsTransient($statusCode, null)) {
+                throw new DeliveringTransportException($message);
+            }
+            throw new DeliveringPermanentTransportException($message);
         }
         $decoded = json_decode($content, true);
         $accessToken = is_array($decoded) ? ($decoded['access_token'] ?? null) : null;
@@ -126,6 +131,36 @@ final class DeliveringFcmPushProvider implements DeliveringPushProviderInterface
         $this->accessTokenExpiresAt = time() + max(60, $expiresIn);
 
         return $accessToken;
+    }
+
+    private function fcmErrorCode(string $content): ?string
+    {
+        $decoded = json_decode($content, true);
+        if (!is_array($decoded)) {
+            return null;
+        }
+
+        $error = $decoded['error'] ?? null;
+        if (!is_array($error)) {
+            return null;
+        }
+
+        $details = $error['details'] ?? [];
+        if (is_array($details)) {
+            foreach ($details as $detail) {
+                if (!is_array($detail)) {
+                    continue;
+                }
+                $errorCode = $detail['errorCode'] ?? null;
+                if (is_string($errorCode) && '' !== $errorCode) {
+                    return $errorCode;
+                }
+            }
+        }
+
+        $status = $error['status'] ?? null;
+
+        return is_string($status) && '' !== $status ? $status : null;
     }
 
     /** @return array<string, mixed> */

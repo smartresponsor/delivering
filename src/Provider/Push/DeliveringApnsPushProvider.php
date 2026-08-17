@@ -39,12 +39,16 @@ final readonly class DeliveringApnsPushProvider implements DeliveringPushProvide
         if (!is_string($topic) || '' === trim($topic)) {
             throw new DeliveringPermanentTransportException(sprintf('APNs topic is not configured for appKey "%s".', $appKey));
         }
+        $environment = strtolower(trim($this->environment));
+        if (!in_array($environment, ['development', 'production'], true)) {
+            throw new DeliveringPermanentTransportException('APNs environment must be development or production.');
+        }
         $jwt = DeliveringJwtSigner::es256(
             ['iss' => $this->teamId, 'iat' => time()],
             str_replace('\\n', "\n", $this->privateKey),
             ['kid' => $this->keyId],
         );
-        $endpoint = 'development' === strtolower($this->environment)
+        $endpoint = 'development' === $environment
             ? 'https://api.sandbox.push.apple.com'
             : 'https://api.push.apple.com';
         $custom = $payload;
@@ -70,8 +74,10 @@ final readonly class DeliveringApnsPushProvider implements DeliveringPushProvide
             throw new DeliveringTransportException('APNs transport request failed.', 0, $exception);
         }
         if ($statusCode < 200 || $statusCode >= 300) {
-            $message = sprintf('APNs rejected the push request with HTTP %d: %s', $statusCode, $content);
-            if ($statusCode >= 500 || in_array($statusCode, [408, 429], true)) {
+            $decoded = json_decode($content, true);
+            $reason = is_array($decoded) && is_string($decoded['reason'] ?? null) ? $decoded['reason'] : null;
+            $message = DeliveringPushFailureClassifier::label('APNs', $statusCode, $reason);
+            if (DeliveringPushFailureClassifier::apnsIsTransient($statusCode, $reason)) {
                 throw new DeliveringTransportException($message);
             }
             throw new DeliveringPermanentTransportException($message);
