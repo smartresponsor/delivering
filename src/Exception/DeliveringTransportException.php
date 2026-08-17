@@ -11,9 +11,18 @@ use Symfony\Component\Messenger\Exception\RecoverableExceptionInterface;
 
 final class DeliveringTransportException extends RuntimeException implements RecoverableExceptionInterface
 {
+    public function __construct(
+        string $message = '',
+        int $code = 0,
+        ?\Throwable $previous = null,
+        private readonly ?int $retryDelay = null,
+    ) {
+        parent::__construct($message, $code, $previous);
+    }
+
     public function getRetryDelay(): ?int
     {
-        return null;
+        return $this->retryDelay;
     }
 
     public function forceRetry(): bool

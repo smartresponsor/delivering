@@ -11,4 +11,13 @@ use Symfony\Component\Messenger\Exception\UnrecoverableExceptionInterface;
 
 final class DeliveringPermanentTransportException extends RuntimeException implements UnrecoverableExceptionInterface
 {
+    public function __construct(
+        string $message,
+        public readonly ?string $reasonCode = null,
+        public readonly bool $recipientInvalid = false,
+        int $code = 0,
+        ?\Throwable $previous = null,
+    ) {
+        parent::__construct($message, $code, $previous);
+    }
 }

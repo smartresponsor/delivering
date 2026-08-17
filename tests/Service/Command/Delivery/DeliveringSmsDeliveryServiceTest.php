@@ -29,7 +29,7 @@ final class DeliveringSmsDeliveryServiceTest extends TestCase
         $entityManager->expects(self::once())->method('persist')->with(self::isInstanceOf(DeliveringDelivery::class));
         $entityManager->expects(self::exactly(3))->method('flush');
 
-        $sender = new class implements DeliveringSmsSenderInterface {
+        $sender = new class () implements DeliveringSmsSenderInterface {
             public int $calls = 0;
 
             public function send(string $recipient, string $body, string $correlationId, string $idempotencyKey): string

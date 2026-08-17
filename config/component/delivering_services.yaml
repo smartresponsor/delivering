@@ -5,11 +5,22 @@ parameters:
     delivering.telnyx.manager_recipient: ''
     delivering.messenger.async_dsn: 'doctrine://postgres?queue_name=delivering'
     delivering.messenger.failed_dsn: 'doctrine://postgres?queue_name=delivering_failed'
+    delivering.apns.team_id: ''
+    delivering.apns.key_id: ''
+    delivering.apns.private_key: ''
+    delivering.apns.topic_map: '{}'
+    delivering.apns.environment: 'production'
+    delivering.fcm.service_account_json: ''
+    delivering.fcm.project_map: '{}'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+
+    _instanceof:
+        App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushProviderInterface:
+            tags: ['delivering.push_provider']
 
     App\Delivering\:
         resource: '../../src/'
@@ -29,11 +40,41 @@ services:
         arguments:
             $managerRecipient: '%env(default:delivering.telnyx.manager_recipient:DELIVERING_TELNYX_MANAGER_RECIPIENT)%'
 
+    App\Delivering\Provider\Push\DeliveringApnsPushProvider:
+        arguments:
+            $teamId: '%env(default:delivering.apns.team_id:DELIVERING_APNS_TEAM_ID)%'
+            $keyId: '%env(default:delivering.apns.key_id:DELIVERING_APNS_KEY_ID)%'
+            $privateKey: '%env(default:delivering.apns.private_key:DELIVERING_APNS_PRIVATE_KEY)%'
+            $topicMapJson: '%env(default:delivering.apns.topic_map:DELIVERING_APNS_TOPIC_MAP)%'
+            $environment: '%env(default:delivering.apns.environment:DELIVERING_APNS_ENVIRONMENT)%'
+
+    App\Delivering\Provider\Push\DeliveringFcmPushProvider:
+        arguments:
+            $serviceAccountJson: '%env(default:delivering.fcm.service_account_json:DELIVERING_FCM_SERVICE_ACCOUNT_JSON)%'
+            $projectMapJson: '%env(default:delivering.fcm.project_map:DELIVERING_FCM_PROJECT_MAP)%'
+
+    App\Delivering\Service\Query\Push\DeliveringPushReadinessService:
+        arguments:
+            $apnsTeamId: '%env(default:delivering.apns.team_id:DELIVERING_APNS_TEAM_ID)%'
+            $apnsKeyId: '%env(default:delivering.apns.key_id:DELIVERING_APNS_KEY_ID)%'
+            $apnsPrivateKey: '%env(default:delivering.apns.private_key:DELIVERING_APNS_PRIVATE_KEY)%'
+            $apnsTopicMapJson: '%env(default:delivering.apns.topic_map:DELIVERING_APNS_TOPIC_MAP)%'
+            $apnsEnvironment: '%env(default:delivering.apns.environment:DELIVERING_APNS_ENVIRONMENT)%'
+            $fcmServiceAccountJson: '%env(default:delivering.fcm.service_account_json:DELIVERING_FCM_SERVICE_ACCOUNT_JSON)%'
+            $fcmProjectMapJson: '%env(default:delivering.fcm.project_map:DELIVERING_FCM_PROJECT_MAP)%'
+
     App\Delivering\ServiceInterface\Command\Receipt\DeliveringReceiptRecorderInterface:
         alias: App\Delivering\Service\Command\Receipt\DeliveringDoctrineReceiptRecorder
 
     App\Delivering\ServiceInterface\Command\Delivery\DeliveringSmsSenderInterface:
         alias: App\Delivering\Provider\Telnyx\DeliveringTelnyxSmsSender
+
+    App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushSenderInterface:
+        alias: App\Delivering\Service\Command\Delivery\DeliveringPushSenderRouter
+
+    App\Delivering\Service\Command\Delivery\DeliveringPushSenderRouter:
+        arguments:
+            $providers: !tagged_iterator delivering.push_provider
 
     App\Delivering\ServiceInterface\Query\Queue\DeliveringQueueStatusProviderInterface:
         alias: App\Delivering\Service\Query\Queue\DeliveringMessengerQueueStatusProvider

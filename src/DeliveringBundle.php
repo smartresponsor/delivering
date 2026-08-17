@@ -51,6 +51,7 @@ final class DeliveringBundle extends AbstractBundle
                     ],
                     'routing' => [
                         'App\\Delivering\\Message\\DeliveringSendSms' => 'delivering_async',
+                        'App\\Delivering\\Message\\DeliveringSendPush' => 'delivering_async',
                     ],
                 ],
             ]);
