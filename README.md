@@ -4,9 +4,9 @@ Provider-neutral outbound delivery capability for the Smart Responsor ecosystem.
 
 ## Responsibility
 
-Delivering accepts application-level delivery commands and delegates them to an external provider. The first vertical slice sends SMS through Telnyx.
+Delivering accepts application-level delivery commands and delegates them to an external provider. The first vertical slice sends SMS through Telnyx; push delivery is modeled as a provider-neutral command boundary for APNs and FCM adapters.
 
-Delivering owns outbound delivery commands, provider-neutral sender contracts, provider adapters, provider error normalization, and Messenger handlers.
+Delivering owns outbound delivery commands, provider-neutral sender contracts, provider adapters, provider error normalization, and Messenger handlers. Push commands carry the concrete device token and notification payload only at the delivery boundary; Notifying remains the source of notification semantics and subscription ownership.
 
 Delivering does not own chat rooms, conversations, domain event routing, CRM data, or the physical queue transport. Symfony Messenger and its transport remain host-application infrastructure.
 
@@ -17,17 +17,19 @@ Register `App\Delivering\DeliveringBundle` in the host application, provide the 
 ```dotenv
 DELIVERING_TELNYX_API_KEY=
 DELIVERING_TELNYX_FROM=
+
+Push provider credentials are intentionally provider-specific and must be supplied by the Host. Delivering does not invent fallback APNs/FCM credentials.
 ```
 
 ## Initial flow
 
 ```text
 Domain workflow
-    -> DeliveringSendSms
+    -> DeliveringSendSms / DeliveringSendPush
     -> Symfony Messenger
-    -> DeliveringSendSmsHandler
-    -> DeliveringTelnyxSmsSender
-    -> Telnyx Messaging API
+    -> DeliveringSendSmsHandler / DeliveringSendPushHandler
+    -> DeliveringTelnyxSmsSender / DeliveringPushSenderRouter
+    -> provider adapter (Telnyx / APNs / FCM)
 ```
 
 ## Observability

@@ -17,12 +17,14 @@ final readonly class DeliveringDeliveryTelemetryService
     {
     }
 
-    public function duplicate(string $correlationId, string $idempotencyKey): void
+    public function duplicate(string $correlationId, string $idempotencyKey, string $channel = 'sms', string $provider = 'telnyx'): void
     {
         $this->logger->info('delivering.delivery.duplicate', $this->context(
             correlationId: $correlationId,
             idempotencyKey: $idempotencyKey,
             outcome: 'duplicate',
+            channel: $channel,
+            provider: $provider,
         ));
     }
 
@@ -31,12 +33,16 @@ final readonly class DeliveringDeliveryTelemetryService
         string $idempotencyKey,
         string $providerMessageId,
         float $latencyMilliseconds,
+        string $channel = 'sms',
+        string $provider = 'telnyx',
     ): void {
         $context = $this->context(
             correlationId: $correlationId,
             idempotencyKey: $idempotencyKey,
             outcome: 'succeeded',
             latencyMilliseconds: $latencyMilliseconds,
+            channel: $channel,
+            provider: $provider,
         );
         $context['provider_message_id'] = $providerMessageId;
 
@@ -48,6 +54,8 @@ final readonly class DeliveringDeliveryTelemetryService
         string $idempotencyKey,
         Throwable $exception,
         float $latencyMilliseconds,
+        string $channel = 'sms',
+        string $provider = 'telnyx',
     ): void {
         $classification = match (true) {
             $exception instanceof DeliveringPermanentTransportException => 'permanent',
@@ -59,6 +67,8 @@ final readonly class DeliveringDeliveryTelemetryService
             idempotencyKey: $idempotencyKey,
             outcome: 'failed',
             latencyMilliseconds: $latencyMilliseconds,
+            channel: $channel,
+            provider: $provider,
         );
         $context['failure_classification'] = $classification;
         $context['exception_class'] = $exception::class;
@@ -73,11 +83,13 @@ final readonly class DeliveringDeliveryTelemetryService
         string $idempotencyKey,
         string $outcome,
         ?float $latencyMilliseconds = null,
+        string $channel = 'sms',
+        string $provider = 'telnyx',
     ): array {
         $context = [
             'component' => 'delivering',
-            'channel' => 'sms',
-            'provider' => 'telnyx',
+            'channel' => $channel,
+            'provider' => $provider,
             'correlation_id' => $correlationId,
             'idempotency_key' => $idempotencyKey,
             'outcome' => $outcome,
