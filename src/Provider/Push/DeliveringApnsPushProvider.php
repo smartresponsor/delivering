@@ -80,7 +80,11 @@ final readonly class DeliveringApnsPushProvider implements DeliveringPushProvide
             if (DeliveringPushFailureClassifier::apnsIsTransient($statusCode, $reason)) {
                 throw new DeliveringTransportException($message);
             }
-            throw new DeliveringPermanentTransportException($message);
+            throw new DeliveringPermanentTransportException(
+                $message,
+                reasonCode: $reason,
+                recipientInvalid: DeliveringPushFailureClassifier::apnsInvalidatesRecipient($reason),
+            );
         }
 
         return (string) (($headers['apns-id'][0] ?? null) ?: $correlationId.':'.$idempotencyKey);

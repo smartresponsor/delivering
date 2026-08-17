@@ -12,6 +12,12 @@ final class DeliveringPushFailureClassifier
     /** @var list<string> */
     private const APNS_TRANSIENT_REASONS = ['TooManyRequests', 'InternalServerError', 'ServiceUnavailable', 'Shutdown', 'IdleTimeout'];
 
+    /** @var list<string> */
+    private const FCM_INVALID_RECIPIENT_CODES = ['UNREGISTERED'];
+
+    /** @var list<string> */
+    private const APNS_INVALID_RECIPIENT_REASONS = ['BadDeviceToken', 'DeviceTokenNotForTopic', 'ExpiredToken', 'Unregistered'];
+
     public static function fcmIsTransient(int $statusCode, ?string $errorCode): bool
     {
         if ($statusCode >= 500 || in_array($statusCode, [408, 429], true)) {
@@ -28,6 +34,16 @@ final class DeliveringPushFailureClassifier
         }
 
         return null !== $reason && in_array($reason, self::APNS_TRANSIENT_REASONS, true);
+    }
+
+    public static function fcmInvalidatesRecipient(?string $errorCode): bool
+    {
+        return null !== $errorCode && in_array($errorCode, self::FCM_INVALID_RECIPIENT_CODES, true);
+    }
+
+    public static function apnsInvalidatesRecipient(?string $reason): bool
+    {
+        return null !== $reason && in_array($reason, self::APNS_INVALID_RECIPIENT_REASONS, true);
     }
 
     public static function label(string $provider, int $statusCode, ?string $code): string

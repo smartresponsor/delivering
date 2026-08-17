@@ -7,6 +7,8 @@ declare(strict_types=1);
 namespace App\Delivering\Service\Command\Delivery;
 
 use App\Delivering\Entity\Delivery\DeliveringDelivery;
+use App\Delivering\Event\DeliveringPushSubscriptionInvalidated;
+use App\Delivering\Exception\DeliveringPermanentTransportException;
 use App\Delivering\Message\DeliveringSendPush;
 use App\Delivering\Service\Observability\DeliveringDeliveryTelemetryService;
 use App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushSenderInterface;
@@ -14,7 +16,9 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 final readonly class DeliveringPushDeliveryService
@@ -22,6 +26,8 @@ final readonly class DeliveringPushDeliveryService
     public function __construct(
         private ManagerRegistry $managerRegistry,
         private DeliveringPushSenderInterface $sender,
+        private EventDispatcherInterface $eventDispatcher,
+        private LoggerInterface $logger,
         private ?DeliveringDeliveryTelemetryService $telemetry = null,
     ) {
     }
@@ -88,6 +94,7 @@ final readonly class DeliveringPushDeliveryService
                 'push',
                 $provider,
             );
+            $this->reportInvalidSubscription($message, $exception);
 
             throw $exception;
         }
@@ -104,6 +111,34 @@ final readonly class DeliveringPushDeliveryService
         );
 
         return $delivery;
+    }
+
+    private function reportInvalidSubscription(DeliveringSendPush $message, Throwable $exception): void
+    {
+        if (!$exception instanceof DeliveringPermanentTransportException || !$exception->recipientInvalid || null === $exception->reasonCode) {
+            return;
+        }
+
+        try {
+            $this->eventDispatcher->dispatch(new DeliveringPushSubscriptionInvalidated(
+                platform: $message->platform,
+                appKey: $message->appKey,
+                tokenHash: hash('sha256', $message->token),
+                reasonCode: $exception->reasonCode,
+                correlationId: $message->correlationId,
+                idempotencyKey: $message->idempotencyKey,
+            ));
+        } catch (Throwable $feedbackException) {
+            $this->logger->error('delivering.push.subscription_invalidation_feedback_failed', [
+                'platform' => $message->platform,
+                'app_key' => $message->appKey,
+                'token_hash' => hash('sha256', $message->token),
+                'reason_code' => $exception->reasonCode,
+                'correlation_id' => $message->correlationId,
+                'feedback_exception_class' => $feedbackException::class,
+                'feedback_exception_message' => $feedbackException->getMessage(),
+            ]);
+        }
     }
 
     private function latencyMilliseconds(int $startedAt): float

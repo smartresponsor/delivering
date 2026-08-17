@@ -28,6 +28,17 @@ final class DeliveringPushFailureClassifierTest extends TestCase
         self::assertFalse(DeliveringPushFailureClassifier::apnsIsTransient(400, 'DeviceTokenNotForTopic'));
     }
 
+    public function testOnlyInvalidDeviceTokensInvalidateRecipients(): void
+    {
+        self::assertTrue(DeliveringPushFailureClassifier::fcmInvalidatesRecipient('UNREGISTERED'));
+        self::assertFalse(DeliveringPushFailureClassifier::fcmInvalidatesRecipient('SENDER_ID_MISMATCH'));
+        self::assertFalse(DeliveringPushFailureClassifier::fcmInvalidatesRecipient('PERMISSION_DENIED'));
+        self::assertTrue(DeliveringPushFailureClassifier::apnsInvalidatesRecipient('Unregistered'));
+        self::assertTrue(DeliveringPushFailureClassifier::apnsInvalidatesRecipient('BadDeviceToken'));
+        self::assertTrue(DeliveringPushFailureClassifier::apnsInvalidatesRecipient('DeviceTokenNotForTopic'));
+        self::assertFalse(DeliveringPushFailureClassifier::apnsInvalidatesRecipient('Forbidden'));
+    }
+
     public function testFailureLabelsDoNotContainProviderResponseBodies(): void
     {
         self::assertSame('FCM rejected the push request with HTTP 404 (UNREGISTERED).', DeliveringPushFailureClassifier::label('FCM', 404, 'UNREGISTERED'));

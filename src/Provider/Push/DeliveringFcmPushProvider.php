@@ -69,7 +69,11 @@ final class DeliveringFcmPushProvider implements DeliveringPushProviderInterface
             if (DeliveringPushFailureClassifier::fcmIsTransient($statusCode, $errorCode)) {
                 throw new DeliveringTransportException($message);
             }
-            throw new DeliveringPermanentTransportException($message);
+            throw new DeliveringPermanentTransportException(
+                $message,
+                reasonCode: $errorCode,
+                recipientInvalid: DeliveringPushFailureClassifier::fcmInvalidatesRecipient($errorCode),
+            );
         }
         $decoded = json_decode($content, true);
         $name = is_array($decoded) ? ($decoded['name'] ?? null) : null;
