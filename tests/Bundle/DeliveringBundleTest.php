@@ -73,7 +73,7 @@ final class DeliveringBundleTest extends TestCase
 
     private function extension(string $alias): Extension
     {
-        return new class($alias) extends Extension {
+        return new class ($alias) extends Extension {
             public function __construct(private readonly string $alias)
             {
             }

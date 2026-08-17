@@ -21,6 +21,8 @@ $finder = Finder::create()
     ->name('*.php');
 
 return new Config()
+    ->setRiskyAllowed(true)
+    ->setLineEnding("\r\n")
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setUsingCache(true)
     ->setCacheFile(__DIR__.'/var/.php-cs-fixer.cache')
@@ -30,7 +32,6 @@ return new Config()
         'binary_operator_spaces' => ['default' => 'single_space'],
         'blank_line_after_opening_tag' => true,
         'declare_strict_types' => true,
-        'line_ending' => true,
         'no_closing_tag' => true,
         'no_unused_imports' => true,
         'ordered_imports' => ['sort_algorithm' => 'alpha'],
@@ -39,3 +40,5 @@ return new Config()
         'trailing_comma_in_multiline' => [
             'elements' => ['arrays', 'arguments', 'parameters'],
         ],
+    ])
+    ->setFinder($finder);
