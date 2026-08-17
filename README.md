@@ -20,10 +20,10 @@ DELIVERING_TELNYX_FROM=
 DELIVERING_APNS_TEAM_ID=
 DELIVERING_APNS_KEY_ID=
 DELIVERING_APNS_PRIVATE_KEY=
-DELIVERING_APNS_TOPIC_MAP={"one-tasker":"com.smartresponsor.mobile.onetasker"}
+DELIVERING_APNS_TOPIC_MAP={"one_tasker":"com.smartresponsor.mobile.onetasker","platform":"com.smartresponsor.mobile.platform"}
 DELIVERING_APNS_ENVIRONMENT=production
 DELIVERING_FCM_SERVICE_ACCOUNT_JSON=
-DELIVERING_FCM_PROJECT_MAP={"one-tasker":"firebase-project-id"}
+DELIVERING_FCM_PROJECT_MAP={"one_tasker":"firebase-project-id","platform":"firebase-platform-project-id"}
 
 Push provider credentials are intentionally provider-specific and must be supplied by the Host. Delivering does not invent fallback APNs/FCM credentials.
 ```

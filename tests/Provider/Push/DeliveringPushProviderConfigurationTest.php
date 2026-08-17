@@ -16,14 +16,14 @@ final class DeliveringPushProviderConfigurationTest extends TestCase
     {
         $provider = new DeliveringApnsPushProvider(new MockHttpClient(), '', '', '', '{}');
         $this->expectException(DeliveringPermanentTransportException::class);
-        $provider->send('token', 'one-tasker', 'Title', 'Body', null, [], 'corr', 'idem');
+        $provider->send('token', 'one_tasker', 'Title', 'Body', null, [], 'corr', 'idem');
     }
 
     public function testFcmFailsClosedWithoutProjectMapping(): void
     {
         $provider = new DeliveringFcmPushProvider(new MockHttpClient(), '{}', '{}');
         $this->expectException(DeliveringPermanentTransportException::class);
-        $provider->send('token', 'one-tasker', 'Title', 'Body', null, [], 'corr', 'idem');
+        $provider->send('token', 'one_tasker', 'Title', 'Body', null, [], 'corr', 'idem');
     }
 
     public function testProvidersSupportOnlyTheirPlatform(): void

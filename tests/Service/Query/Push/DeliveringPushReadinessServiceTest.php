@@ -33,17 +33,17 @@ final class DeliveringPushReadinessServiceTest extends TestCase
             'TEAM123',
             'KEY123',
             '-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----',
-            '{"one-tasker":"com.smartresponsor.mobile.onetasker"}',
+            '{"one_tasker":"com.smartresponsor.mobile.onetasker"}',
             'production',
             $serviceAccount,
-            '{"one-tasker":"smartresponsor-onetasker"}',
+            '{"one_tasker":"smartresponsor-onetasker"}',
         ))->status();
 
         self::assertTrue($status['configured']);
         self::assertTrue($status['apns']['configured']);
         self::assertTrue($status['fcm']['configured']);
-        self::assertSame(['one-tasker'], $status['apns']['appKeys']);
-        self::assertSame(['one-tasker'], $status['fcm']['appKeys']);
+        self::assertSame(['one_tasker'], $status['apns']['appKeys']);
+        self::assertSame(['one_tasker'], $status['fcm']['appKeys']);
         self::assertSame([], $status['apns']['issues']);
         self::assertSame([], $status['fcm']['issues']);
         self::assertStringNotContainsString('TEAM123', json_encode($status, JSON_THROW_ON_ERROR));
