@@ -28,6 +28,14 @@ DELIVERING_FCM_PROJECT_MAP={"one-tasker":"firebase-project-id"}
 Push provider credentials are intentionally provider-specific and must be supplied by the Host. Delivering does not invent fallback APNs/FCM credentials.
 ```
 
+Check provider readiness without printing any secret values:
+
+```bash
+php bin/console delivering:push:status
+```
+
+The command returns success only when both APNs and FCM credentials plus their `appKey` mappings are present. Missing or malformed configuration returns a non-zero exit code and reports only variable names, mapping keys, and validation issues.
+
 ## Initial flow
 
 ```text

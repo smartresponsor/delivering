@@ -53,6 +53,16 @@ services:
             $serviceAccountJson: '%env(default:delivering.fcm.service_account_json:DELIVERING_FCM_SERVICE_ACCOUNT_JSON)%'
             $projectMapJson: '%env(default:delivering.fcm.project_map:DELIVERING_FCM_PROJECT_MAP)%'
 
+    App\Delivering\Service\Query\Push\DeliveringPushReadinessService:
+        arguments:
+            $apnsTeamId: '%env(default:delivering.apns.team_id:DELIVERING_APNS_TEAM_ID)%'
+            $apnsKeyId: '%env(default:delivering.apns.key_id:DELIVERING_APNS_KEY_ID)%'
+            $apnsPrivateKey: '%env(default:delivering.apns.private_key:DELIVERING_APNS_PRIVATE_KEY)%'
+            $apnsTopicMapJson: '%env(default:delivering.apns.topic_map:DELIVERING_APNS_TOPIC_MAP)%'
+            $apnsEnvironment: '%env(default:delivering.apns.environment:DELIVERING_APNS_ENVIRONMENT)%'
+            $fcmServiceAccountJson: '%env(default:delivering.fcm.service_account_json:DELIVERING_FCM_SERVICE_ACCOUNT_JSON)%'
+            $fcmProjectMapJson: '%env(default:delivering.fcm.project_map:DELIVERING_FCM_PROJECT_MAP)%'
+
     App\Delivering\ServiceInterface\Command\Receipt\DeliveringReceiptRecorderInterface:
         alias: App\Delivering\Service\Command\Receipt\DeliveringDoctrineReceiptRecorder
 
