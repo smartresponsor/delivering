@@ -4,9 +4,9 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Message;
+namespace App\Delivering\Message\Command\Receipt;
 
-use App\Delivering\Enum\DeliveringStatus;
+use App\Delivering\Enum\DeliveringDeliveryStatus;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
@@ -15,7 +15,7 @@ final readonly class DeliveringProcessReceipt
     public function __construct(
         public string $eventId,
         public string $providerMessageId,
-        public DeliveringStatus $status,
+        public DeliveringDeliveryStatus $status,
         public DateTimeImmutable $occurredAt,
         public ?string $errorCode,
         public ?string $errorDetail,

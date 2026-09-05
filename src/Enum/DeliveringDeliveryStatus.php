@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\Enum;
 
-enum DeliveringStatus: string
+enum DeliveringDeliveryStatus: string
 {
     case Queued = 'queued';
     case Sending = 'sending';

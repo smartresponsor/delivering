@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\Entity\Delivery;
 
-use App\Delivering\Enum\DeliveringStatus;
+use App\Delivering\Enum\DeliveringDeliveryStatus;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -39,8 +39,8 @@ class DeliveringDelivery
     #[ORM\Column(name: 'provider_message_id', length: 191, nullable: true)]
     private ?string $providerMessageId = null;
 
-    #[ORM\Column(enumType: DeliveringStatus::class)]
-    private DeliveringStatus $status;
+    #[ORM\Column(enumType: DeliveringDeliveryStatus::class)]
+    private DeliveringDeliveryStatus $status;
 
     #[ORM\Column(name: 'status_occurred_at', type: 'datetime_immutable')]
     private DateTimeImmutable $statusOccurredAt;
@@ -56,7 +56,7 @@ class DeliveringDelivery
         $this->channel = $channel;
         $this->provider = $provider;
         $this->recipient = $recipient;
-        $this->status = DeliveringStatus::Queued;
+        $this->status = DeliveringDeliveryStatus::Queued;
         $this->statusOccurredAt = new DateTimeImmutable('@0');
         $this->createdAt = new DateTimeImmutable();
     }
@@ -71,33 +71,33 @@ class DeliveringDelivery
         return $this->providerMessageId;
     }
 
-    public function status(): DeliveringStatus
+    public function status(): DeliveringDeliveryStatus
     {
         return $this->status;
     }
 
     public function markSending(DateTimeImmutable $occurredAt): void
     {
-        $this->advanceStatus(DeliveringStatus::Sending, $occurredAt);
+        $this->advanceStatus(DeliveringDeliveryStatus::Sending, $occurredAt);
     }
 
     public function markSubmitted(string $providerMessageId, DateTimeImmutable $occurredAt): void
     {
         $this->providerMessageId = $providerMessageId;
-        $this->advanceStatus(DeliveringStatus::Sent, $occurredAt);
+        $this->advanceStatus(DeliveringDeliveryStatus::Sent, $occurredAt);
     }
 
     public function markSendingFailed(DateTimeImmutable $occurredAt): void
     {
-        $this->advanceStatus(DeliveringStatus::SendingFailed, $occurredAt);
+        $this->advanceStatus(DeliveringDeliveryStatus::SendingFailed, $occurredAt);
     }
 
-    public function applyReceipt(DeliveringStatus $status, DateTimeImmutable $occurredAt): void
+    public function applyReceipt(DeliveringDeliveryStatus $status, DateTimeImmutable $occurredAt): void
     {
         $this->advanceStatus($status, $occurredAt);
     }
 
-    private function advanceStatus(DeliveringStatus $status, DateTimeImmutable $occurredAt): void
+    private function advanceStatus(DeliveringDeliveryStatus $status, DateTimeImmutable $occurredAt): void
     {
         if ($occurredAt < $this->statusOccurredAt) {
             return;

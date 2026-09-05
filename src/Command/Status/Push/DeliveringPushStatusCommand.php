@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Command;
+namespace App\Delivering\Command\Status\Push;
 
 use App\Delivering\Service\Query\Push\DeliveringPushReadinessService;
 use Symfony\Component\Console\Attribute\AsCommand;

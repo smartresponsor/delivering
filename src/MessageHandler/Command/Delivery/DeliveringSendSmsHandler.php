@@ -4,9 +4,9 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\MessageHandler;
+namespace App\Delivering\MessageHandler\Command\Delivery;
 
-use App\Delivering\Message\DeliveringSendSms;
+use App\Delivering\Message\Command\Delivery\DeliveringSendSms;
 use App\Delivering\Service\Command\Delivery\DeliveringSmsDeliveryService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

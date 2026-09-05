@@ -8,7 +8,7 @@ namespace App\Delivering\Service\Command\Receipt;
 
 use App\Delivering\Entity\Attempt\DeliveringAttempt;
 use App\Delivering\Entity\Delivery\DeliveringDelivery;
-use App\Delivering\Message\DeliveringProcessReceipt;
+use App\Delivering\Message\Command\Receipt\DeliveringProcessReceipt;
 use App\Delivering\ServiceInterface\Command\Receipt\DeliveringReceiptRecorderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 

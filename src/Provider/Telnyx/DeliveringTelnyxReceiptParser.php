@@ -6,8 +6,8 @@ declare(strict_types=1);
 
 namespace App\Delivering\Provider\Telnyx;
 
-use App\Delivering\Enum\DeliveringStatus;
-use App\Delivering\Message\DeliveringProcessReceipt;
+use App\Delivering\Enum\DeliveringDeliveryStatus;
+use App\Delivering\Message\Command\Receipt\DeliveringProcessReceipt;
 use DateTimeImmutable;
 use JsonException;
 use UnexpectedValueException;
@@ -45,9 +45,9 @@ final readonly class DeliveringTelnyxReceiptParser
         $providerMessageId = $payload['id'] ?? null;
         $occurredAt = $data['occurred_at'] ?? null;
         $statusValue = $payload['to'][0]['status'] ?? match ($eventType) {
-            'message.sent' => DeliveringStatus::Sent->value,
-            'message.read' => DeliveringStatus::Read->value,
-            default => DeliveringStatus::Unknown->value,
+            'message.sent' => DeliveringDeliveryStatus::Sent->value,
+            'message.read' => DeliveringDeliveryStatus::Read->value,
+            default => DeliveringDeliveryStatus::Unknown->value,
         };
 
         if (!is_string($eventId) || !is_string($providerMessageId) || !is_string($occurredAt)) {
@@ -61,7 +61,7 @@ final readonly class DeliveringTelnyxReceiptParser
         return new DeliveringProcessReceipt(
             $eventId,
             $providerMessageId,
-            DeliveringStatus::tryFrom(is_string($statusValue) ? $statusValue : '') ?? DeliveringStatus::Unknown,
+            DeliveringDeliveryStatus::tryFrom(is_string($statusValue) ? $statusValue : '') ?? DeliveringDeliveryStatus::Unknown,
             new DateTimeImmutable($occurredAt),
             $errorCode,
             $errorDetail,

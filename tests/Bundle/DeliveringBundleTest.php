@@ -53,11 +53,15 @@ final class DeliveringBundleTest extends TestCase
         ], $messenger['transports']['delivering_async']['retry_strategy']);
         self::assertSame(
             'delivering_async',
-            $messenger['routing']['App\\Delivering\\Message\\DeliveringSendSms'],
+            $messenger['routing']['App\\Delivering\\Message\\Command\\Delivery\\DeliveringSendSms'],
         );
         self::assertSame(
             'delivering_async',
-            $messenger['routing']['App\\Delivering\\Message\\DeliveringSendPush'],
+            $messenger['routing']['App\\Delivering\\Message\\Command\\Delivery\\DeliveringSendPush'],
+        );
+        self::assertSame(
+            'delivering_async',
+            $messenger['routing']['App\\Delivering\\Message\\Command\\Receipt\\DeliveringProcessReceipt'],
         );
     }
 

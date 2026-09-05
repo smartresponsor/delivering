@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace App\Delivering\Service\Command\Delivery;
 
 use App\Delivering\Entity\Delivery\DeliveringDelivery;
-use App\Delivering\Message\DeliveringSendSms;
+use App\Delivering\Message\Command\Delivery\DeliveringSendSms;
 use App\Delivering\Service\Observability\DeliveringDeliveryTelemetryService;
 use App\Delivering\ServiceInterface\Command\Delivery\DeliveringSmsSenderInterface;
 use DateTimeImmutable;

@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\Tests\Provider\Telnyx;
 
-use App\Delivering\Enum\DeliveringStatus;
+use App\Delivering\Enum\DeliveringDeliveryStatus;
 use App\Delivering\Provider\Telnyx\DeliveringTelnyxReceiptParser;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +31,7 @@ final class DeliveringTelnyxReceiptParserTest extends TestCase
         self::assertNotNull($receipt);
         self::assertSame('event-123', $receipt->eventId);
         self::assertSame('message-123', $receipt->providerMessageId);
-        self::assertSame(DeliveringStatus::DeliveryFailed, $receipt->status);
+        self::assertSame(DeliveringDeliveryStatus::DeliveryFailed, $receipt->status);
         self::assertSame('40006', $receipt->errorCode);
         self::assertSame('Temporary carrier failure', $receipt->errorDetail);
     }

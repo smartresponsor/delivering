@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace App\Delivering\Tests\EventSubscriber;
 
 use App\Delivering\EventSubscriber\DeliveringMessengerTelemetrySubscriber;
-use App\Delivering\Message\DeliveringSendSms;
+use App\Delivering\Message\Command\Delivery\DeliveringSendSms;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Stringable;

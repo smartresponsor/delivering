@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\Provider\Telnyx;
 
-use App\Delivering\Message\DeliveringSendSms;
+use App\Delivering\Message\Command\Delivery\DeliveringSendSms;
 use JsonException;
 use UnexpectedValueException;
 
