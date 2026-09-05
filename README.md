@@ -12,7 +12,7 @@ Delivering does not own chat rooms, conversations, domain event routing, CRM dat
 
 ## Host integration
 
-Register `App\Delivering\DeliveringBundle` in the host application, provide the required environment variables, and route `App\Delivering\Message\DeliveringSendSms` to an asynchronous Messenger transport.
+Register `App\Delivering\DeliveringBundle` in the host application, provide the required environment variables, and route `App\Delivering\Message\Command\Delivery\DeliveringSendSms` to an asynchronous Messenger transport.
 
 ```dotenv
 DELIVERING_TELNYX_API_KEY=

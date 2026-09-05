@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Controller;
+namespace App\Delivering\Controller\Webhook\Telnyx;
 
 use App\Delivering\Provider\Telnyx\DeliveringTelnyxConversationNotificationParser;
 use App\Delivering\Provider\Telnyx\DeliveringTelnyxReceiptParser;

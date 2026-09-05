@@ -9,7 +9,7 @@ namespace App\Delivering\Service\Command\Delivery;
 use App\Delivering\Entity\Delivery\DeliveringDelivery;
 use App\Delivering\Event\DeliveringPushSubscriptionInvalidated;
 use App\Delivering\Exception\DeliveringPermanentTransportException;
-use App\Delivering\Message\DeliveringSendPush;
+use App\Delivering\Message\Command\Delivery\DeliveringSendPush;
 use App\Delivering\Service\Observability\DeliveringDeliveryTelemetryService;
 use App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushSenderInterface;
 use App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushTokenResolverInterface;

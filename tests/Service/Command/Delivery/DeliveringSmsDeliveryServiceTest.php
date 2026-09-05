@@ -7,8 +7,8 @@ declare(strict_types=1);
 namespace App\Delivering\Tests\Service\Command\Delivery;
 
 use App\Delivering\Entity\Delivery\DeliveringDelivery;
-use App\Delivering\Enum\DeliveringStatus;
-use App\Delivering\Message\DeliveringSendSms;
+use App\Delivering\Enum\DeliveringDeliveryStatus;
+use App\Delivering\Message\Command\Delivery\DeliveringSendSms;
 use App\Delivering\Service\Command\Delivery\DeliveringSmsDeliveryService;
 use App\Delivering\ServiceInterface\Command\Delivery\DeliveringSmsSenderInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -51,7 +51,7 @@ final class DeliveringSmsDeliveryServiceTest extends TestCase
 
         self::assertSame(1, $sender->calls);
         self::assertSame('message-123', $delivery->providerMessageId());
-        self::assertSame(DeliveringStatus::Sent, $delivery->status());
+        self::assertSame(DeliveringDeliveryStatus::Sent, $delivery->status());
     }
 
     public function testConcurrentDuplicateReturnsPersistedDeliveryWithoutSending(): void

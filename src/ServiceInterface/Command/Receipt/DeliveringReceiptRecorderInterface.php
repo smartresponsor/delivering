@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\ServiceInterface\Command\Receipt;
 
-use App\Delivering\Message\DeliveringProcessReceipt;
+use App\Delivering\Message\Command\Receipt\DeliveringProcessReceipt;
 
 interface DeliveringReceiptRecorderInterface
 {

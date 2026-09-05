@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Tests\Message;
+namespace App\Delivering\Tests\Message\Command\Delivery;
 
-use App\Delivering\Message\DeliveringSendPush;
+use App\Delivering\Message\Command\Delivery\DeliveringSendPush;
 use PHPUnit\Framework\TestCase;
 
 final class DeliveringSendPushTest extends TestCase

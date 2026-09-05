@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\Service\Command\Receipt;
 
-use App\Delivering\Message\DeliveringProcessReceipt;
+use App\Delivering\Message\Command\Receipt\DeliveringProcessReceipt;
 use App\Delivering\ServiceInterface\Command\Receipt\DeliveringReceiptRecorderInterface;
 use JsonException;
 use RuntimeException;

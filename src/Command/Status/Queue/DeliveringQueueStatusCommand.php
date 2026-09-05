@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Command;
+namespace App\Delivering\Command\Status\Queue;
 
 use App\Delivering\ServiceInterface\Query\Queue\DeliveringQueueStatusProviderInterface;
 use Symfony\Component\Console\Attribute\AsCommand;

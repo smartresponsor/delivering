@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace App\Delivering\Entity\Attempt;
 
 use App\Delivering\Entity\Delivery\DeliveringDelivery;
-use App\Delivering\Enum\DeliveringStatus;
+use App\Delivering\Enum\DeliveringDeliveryStatus;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -31,8 +31,8 @@ class DeliveringAttempt
     #[ORM\Column(name: 'provider_message_id', length: 191)]
     private string $providerMessageId;
 
-    #[ORM\Column(enumType: DeliveringStatus::class)]
-    private DeliveringStatus $status;
+    #[ORM\Column(enumType: DeliveringDeliveryStatus::class)]
+    private DeliveringDeliveryStatus $status;
 
     #[ORM\Column(name: 'occurred_at', type: 'datetime_immutable')]
     private DateTimeImmutable $occurredAt;
@@ -43,7 +43,7 @@ class DeliveringAttempt
     #[ORM\Column(name: 'error_detail', type: 'text', nullable: true)]
     private ?string $errorDetail;
 
-    public function __construct(DeliveringDelivery $delivery, string $eventId, string $providerMessageId, DeliveringStatus $status, DateTimeImmutable $occurredAt, ?string $errorCode, ?string $errorDetail)
+    public function __construct(DeliveringDelivery $delivery, string $eventId, string $providerMessageId, DeliveringDeliveryStatus $status, DateTimeImmutable $occurredAt, ?string $errorCode, ?string $errorDetail)
     {
         $this->id = Uuid::v7();
         $this->delivery = $delivery;
