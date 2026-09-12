@@ -49,13 +49,17 @@ final class DeliveringMessengerTelemetrySubscriberTest extends TestCase
         $retrying->setForRetry();
 
         $subscriber->onFailed($retrying);
-        self::assertSame([], $logger->records);
+        self::assertCount(0, $logger->records);
 
         $subscriber->onFailed(new WorkerMessageFailedEvent(
             $this->envelope()->with(new RedeliveryStamp(4)),
             'delivering_async',
             new \RuntimeException('Retries exhausted'),
         ));
+
+        if (!isset($logger->records[0])) {
+            self::fail('Expected terminal failure telemetry record.');
+        }
 
         self::assertSame('error', $logger->records[0]['level']);
         self::assertSame('delivering.messenger.failed_terminal', $logger->records[0]['message']);

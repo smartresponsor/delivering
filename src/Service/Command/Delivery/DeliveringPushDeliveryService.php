@@ -161,9 +161,7 @@ final readonly class DeliveringPushDeliveryService
 
     private function resetEntityManager(): EntityManagerInterface
     {
-        if (method_exists($this->managerRegistry, 'resetManager')) {
-            $this->managerRegistry->resetManager();
-        }
+        $this->managerRegistry->resetManager();
 
         return $this->entityManager();
     }

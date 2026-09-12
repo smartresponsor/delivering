@@ -8,19 +8,28 @@ use App\Delivering\Exception\DeliveringPermanentTransportException;
 
 final class DeliveringJwtSigner
 {
-    /** @param array<string, mixed> $claims @param array<string, mixed> $headers */
+    /**
+     * @param array<string, mixed> $claims
+     * @param array<string, mixed> $headers
+     */
     public static function rs256(array $claims, string $privateKey, array $headers = []): string
     {
         return self::sign($claims, $privateKey, OPENSSL_ALGO_SHA256, false, $headers + ['alg' => 'RS256', 'typ' => 'JWT']);
     }
 
-    /** @param array<string, mixed> $claims @param array<string, mixed> $headers */
+    /**
+     * @param array<string, mixed> $claims
+     * @param array<string, mixed> $headers
+     */
     public static function es256(array $claims, string $privateKey, array $headers = []): string
     {
         return self::sign($claims, $privateKey, OPENSSL_ALGO_SHA256, true, $headers + ['alg' => 'ES256', 'typ' => 'JWT']);
     }
 
-    /** @param array<string, mixed> $claims @param array<string, mixed> $headers */
+    /**
+     * @param array<string, mixed> $claims
+     * @param array<string, mixed> $headers
+     */
     private static function sign(array $claims, string $privateKey, int|string $algorithm, bool $ecdsa, array $headers): string
     {
         $header = self::base64Url((string) json_encode($headers, JSON_THROW_ON_ERROR));
