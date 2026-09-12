@@ -19,7 +19,7 @@ services:
         autoconfigure: true
 
     _instanceof:
-        App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushProviderInterface:
+        App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushProviderInterface:
             tags: ['delivering.push_provider']
 
     App\Delivering\:
@@ -27,20 +27,20 @@ services:
         exclude:
             - '../../src/DeliveringBundle.php'
 
-    App\Delivering\Provider\Telnyx\DeliveringTelnyxSmsSender:
+    App\Delivering\Provider\Telnyx\DeliveryTelnyxSmsSender:
         arguments:
             $apiKey: '%env(default:delivering.telnyx.api_key:DELIVERING_TELNYX_API_KEY)%'
             $sender: '%env(default:delivering.telnyx.from:DELIVERING_TELNYX_FROM)%'
 
-    App\Delivering\Provider\Telnyx\DeliveringTelnyxWebhookSignatureVerifier:
+    App\Delivering\Provider\Telnyx\DeliveryTelnyxWebhookSignatureVerifier:
         arguments:
             $publicKey: '%env(default:delivering.telnyx.public_key:DELIVERING_TELNYX_PUBLIC_KEY)%'
 
-    App\Delivering\Provider\Telnyx\DeliveringTelnyxConversationNotificationParser:
+    App\Delivering\Provider\Telnyx\DeliveryTelnyxConversationNotificationParser:
         arguments:
             $managerRecipient: '%env(default:delivering.telnyx.manager_recipient:DELIVERING_TELNYX_MANAGER_RECIPIENT)%'
 
-    App\Delivering\Provider\Push\DeliveringApnsPushProvider:
+    App\Delivering\Provider\Push\DeliveryApnsPushProvider:
         arguments:
             $teamId: '%env(default:delivering.apns.team_id:DELIVERING_APNS_TEAM_ID)%'
             $keyId: '%env(default:delivering.apns.key_id:DELIVERING_APNS_KEY_ID)%'
@@ -48,12 +48,12 @@ services:
             $topicMapJson: '%env(default:delivering.apns.topic_map:DELIVERING_APNS_TOPIC_MAP)%'
             $environment: '%env(default:delivering.apns.environment:DELIVERING_APNS_ENVIRONMENT)%'
 
-    App\Delivering\Provider\Push\DeliveringFcmPushProvider:
+    App\Delivering\Provider\Push\DeliveryFcmPushProvider:
         arguments:
             $serviceAccountJson: '%env(default:delivering.fcm.service_account_json:DELIVERING_FCM_SERVICE_ACCOUNT_JSON)%'
             $projectMapJson: '%env(default:delivering.fcm.project_map:DELIVERING_FCM_PROJECT_MAP)%'
 
-    App\Delivering\Service\Query\Push\DeliveringPushReadinessService:
+    App\Delivering\Service\Query\Push\DeliveryPushReadinessService:
         arguments:
             $apnsTeamId: '%env(default:delivering.apns.team_id:DELIVERING_APNS_TEAM_ID)%'
             $apnsKeyId: '%env(default:delivering.apns.key_id:DELIVERING_APNS_KEY_ID)%'
@@ -63,26 +63,26 @@ services:
             $fcmServiceAccountJson: '%env(default:delivering.fcm.service_account_json:DELIVERING_FCM_SERVICE_ACCOUNT_JSON)%'
             $fcmProjectMapJson: '%env(default:delivering.fcm.project_map:DELIVERING_FCM_PROJECT_MAP)%'
 
-    App\Delivering\ServiceInterface\Command\Receipt\DeliveringReceiptRecorderInterface:
-        alias: App\Delivering\Service\Command\Receipt\DeliveringDoctrineReceiptRecorder
+    App\Delivering\ServiceInterface\Command\Receipt\DeliveryReceiptRecorderInterface:
+        alias: App\Delivering\Service\Command\Receipt\DeliveryDoctrineReceiptRecorder
 
-    App\Delivering\ServiceInterface\Command\Delivery\DeliveringSmsSenderInterface:
-        alias: App\Delivering\Provider\Telnyx\DeliveringTelnyxSmsSender
+    App\Delivering\ServiceInterface\Command\Delivery\DeliverySmsSenderInterface:
+        alias: App\Delivering\Provider\Telnyx\DeliveryTelnyxSmsSender
 
-    App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushSenderInterface:
-        alias: App\Delivering\Service\Command\Delivery\DeliveringPushSenderRouter
+    App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushSenderInterface:
+        alias: App\Delivering\Service\Command\Delivery\DeliveryPushSenderRouter
 
-    App\Delivering\ServiceInterface\Command\Delivery\DeliveringPushTokenResolverInterface:
-        alias: App\Delivering\Service\Command\Delivery\DeliveringUnavailablePushTokenResolver
+    App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushTokenResolverInterface:
+        alias: App\Delivering\Service\Command\Delivery\DeliveryUnavailablePushTokenResolver
 
-    App\Delivering\Service\Command\Delivery\DeliveringPushSenderRouter:
+    App\Delivering\Service\Command\Delivery\DeliveryPushSenderRouter:
         arguments:
             $providers: !tagged_iterator delivering.push_provider
 
-    App\Delivering\ServiceInterface\Query\Queue\DeliveringQueueStatusProviderInterface:
-        alias: App\Delivering\Service\Query\Queue\DeliveringMessengerQueueStatusProvider
+    App\Delivering\ServiceInterface\Query\Queue\DeliveryQueueStatusProviderInterface:
+        alias: App\Delivering\Service\Query\Queue\DeliveryMessengerQueueStatusProvider
 
-    App\Delivering\Service\Query\Queue\DeliveringMessengerQueueStatusProvider:
+    App\Delivering\Service\Query\Queue\DeliveryMessengerQueueStatusProvider:
         arguments:
             $asyncReceiver: '@messenger.transport.delivering_async'
             $failedReceiver: '@messenger.transport.delivering_failed'

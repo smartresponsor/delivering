@@ -40,3 +40,15 @@ We have a verified local baseline, normative canon mapping, and a bounded RC wor
 - Canon000/Canon018 still identify a repository-wide subject-prefix migration from `Delivering*` to `Delivery*`. This cannot be completed safely as a partial local rename because the affected public Messenger/API class names have cross-repository consumers, while this task authorizes writes only inside Delivering. Canon010 requires callers/config/docs to migrate atomically, so this tail is explicitly deferred to a separately authorized cross-repository migration rather than hidden behind aliases or partial renames.
 - Pre-existing untracked `.gating/` remains untouched and excluded from this task's commit.
 
+### Canon000/Canon018 subject-prefix closure
+
+- Follow-up authorization executed the deferred `Delivering*` to `Delivery*` subject migration while preserving the component namespace `App\\Delivering\\` and framework bootstrap `DeliveringBundle`.
+- Renamed PHP subject types, filenames, tests, DI references, Messenger routing references, and README code examples consistently; no compatibility aliases were introduced.
+- Residual tracked `Delivering[A-Z]` references are limited to `DeliveringBundle` and references to that bundle, which is the framework-bootstrap exception.
+- `composer quality` after the rename: PASS; PHP-CS-Fixer 0 files, PHPStan 0 errors, PHPUnit 36/36 with 117 assertions and 2 skipped tests.
+- Host `App` consumers were found in phone verification and notification dispatch. They used a stale pre-canonical message namespace and were updated to `App\\Delivering\\Message\\Command\\Delivery\\DeliverySendSms` / `DeliverySendPush`; host deployment documentation was updated too.
+- Host changed-PHP lint: PASS. Host Composer autoload refresh: PASS.
+- Host full PHPUnit currently fails on unrelated pre-existing sibling debt in Facting, Cruding, Commissioning, and Vendoring; no reported failure references Delivering.
+- Host Symfony command discovery is blocked before `lint:container` can run, so container acceptance is externally blocked at application bootstrap.
+- Host repository carries pre-existing dirty `.gating/` changes; those remain untouched and must not be mixed into this migration.
+
