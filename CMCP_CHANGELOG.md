@@ -52,3 +52,42 @@ We have a verified local baseline, normative canon mapping, and a bounded RC wor
 - Host Symfony command discovery is blocked before `lint:container` can run, so container acceptance is externally blocked at application bootstrap.
 - Host repository carries pre-existing dirty `.gating/` changes; those remain untouched and must not be mixed into this migration.
 
+## 2026-09-13 Delivering RC hardening
+
+### Iteration 1 — reconnaissance and baseline
+
+- Re-read Delivering documentation, manifests, source/test/config surfaces and the local dependency contour: Objecting, Cruding, Viewing, Interfacing, Gating, and Canonization.
+- Normative Canonization material consulted for this pass: `Canon010ArchitectureMigrationCompletenessRule`, `Canon018ComposerIdentityMappingRule`, `Canon022StandaloneApplicationDependencyBaselineRule`, `Canon039PhpTestToolingRule`, `Canon040PhpTestCoverageRule`, and `GUARD_MATRIX.md`.
+- Target-to-canon mapping: `delivering/delivery` remains `App\\Delivering\\` + `Delivery*`; generic lifecycle audit fields belong to Objecting; generic CRUD belongs to Cruding; presentation/shell concerns remain in Viewing/Interfacing; Delivering owns provider-neutral outbound delivery, provider adapters, receipts, retry/failure semantics, status and diagnostics.
+- Market/enterprise baseline reviewed: at-least-once delivery/idempotency, failure transports/retry semantics, provider delivery-status diagnostics, device-token lifecycle, and webhook/event deduplication. RC-critical scope was separated from post-RC provider/channel/UI growth.
+- Concrete RC work selected: repair mandatory dependency wiring, remove duplicated lifecycle ownership, make coverage execution reproducible, and close HIGH_TEST_DEBT through delivery-boundary tests.
+
+### Iteration 2 — material implementation
+
+- Declared the required `cruding/crud`, `interfacing/interface`, `objecting/object`, and `viewing/view` application dependencies in development and production manifests.
+- Added development-only local `path` repositories with `symlink: true`; Collectioning and Tabling are exposed only as root Composer repository sources required by Cruding's transitive package graph.
+- Added `minimum-stability: dev` with `prefer-stable: true` for the current SmartResponsor dev-branch package graph; production manifest remains free of local path repositories.
+- Replaced Delivering's local `created_at` ownership in `DeliveryDelivery` with Objecting's canonical `ObjectAuditedInterface` + `ObjectAuditEmbeddableTrait` and initialized the canonical audit pack at creation.
+- Scoped Composer update completed and locked the sibling package contour; Composer reported no security advisories.
+
+### Iteration 3 — verification and fix
+
+- `composer validate --strict --check-lock`: PASS.
+- `composer quality`: PASS after dependency/Objecting integration.
+- Canon039 execution defect found: PHPUnit 11.5 rejects `--branch-coverage`; changed the coverage contract to supported `--path-coverage` and made the script create `var/coverage` before writing the persistent text summary.
+- First valid coverage evidence exposed Canon040 HIGH_TEST_DEBT: Methods 28.44%, Branches 54.37%, Lines 38.92%.
+
+### Iteration 4 — debt closure and integration
+
+- Added focused APNs/FCM provider validation tests without external network calls.
+- Added operational contract tests for push routing, unavailable token resolution, queue health/status commands, push readiness, subscription invalidation, and structured telemetry.
+- Added exhaustive message/receipt boundary validation, Messenger queue-count, push orchestration success/failure/idempotency, and Doctrine receipt persistence tests.
+- Final quality suite: PASS — 61 tests, 184 assertions, 2 environment-dependent skips; PHPStan 0 errors; PHP-CS-Fixer 0 fixable files.
+- Final Canon040 evidence: Methods 50.46% (55/109), Branches 67.01% (449/670), Lines 69.59% (627/901). `HIGH_TEST_DEBT` is cleared in all three dimensions. Canonical 80%/80%/70% targets remain bounded post-RC coverage debt, with branch coverage closest to target.
+
+### Iteration 5 — final acceptance and handoff
+
+- RC-critical dependency ownership, Objecting lifecycle ownership, reproducible coverage tooling, idempotency/receipt persistence, provider configuration boundaries, telemetry classifications, and operational status contracts are materially verified.
+- Growth remains deliberately outside RC: additional providers/channels, richer delivery analytics/dashboard UX, and broader provider-path coverage toward Canon040 target thresholds.
+- Final acceptance requires only repository diff/worktree/upstream inspection and coherent Git integration of this bounded change set.
+

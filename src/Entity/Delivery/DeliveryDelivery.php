@@ -7,6 +7,8 @@ declare(strict_types=1);
 namespace App\Delivering\Entity\Delivery;
 
 use App\Delivering\Enum\DeliveryDeliveryStatus;
+use App\Objecting\EntityInterface\ObjectAuditedInterface;
+use App\Objecting\EntityTrait\Embeddable\ObjectAuditEmbeddableTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -15,8 +17,9 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Table(name: 'delivering_delivery')]
 #[ORM\UniqueConstraint(name: 'uniq_delivering_delivery_idempotency', columns: ['idempotency_key'])]
 #[ORM\UniqueConstraint(name: 'uniq_delivering_delivery_provider_message', columns: ['provider_message_id'])]
-class DeliveryDelivery
+class DeliveryDelivery implements ObjectAuditedInterface
 {
+    use ObjectAuditEmbeddableTrait;
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     private Uuid $id;
@@ -45,9 +48,6 @@ class DeliveryDelivery
     #[ORM\Column(name: 'status_occurred_at', type: 'datetime_immutable')]
     private DateTimeImmutable $statusOccurredAt;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
-    private DateTimeImmutable $createdAt;
-
     public function __construct(string $idempotencyKey, string $correlationId, string $channel, string $provider, string $recipient)
     {
         $this->id = Uuid::v7();
@@ -58,7 +58,7 @@ class DeliveryDelivery
         $this->recipient = $recipient;
         $this->status = DeliveryDeliveryStatus::Queued;
         $this->statusOccurredAt = new DateTimeImmutable('@0');
-        $this->createdAt = new DateTimeImmutable();
+        $this->initializeObjectAudit();
     }
 
     public function id(): Uuid

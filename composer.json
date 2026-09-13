@@ -3,8 +3,14 @@
     "description": "Provider-neutral outbound delivery component for the Smart Responsor ecosystem",
     "type": "symfony-bundle",
     "license": "proprietary",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
+        "cruding/crud": "dev-master || dev-main",
+        "interfacing/interface": "dev-master || dev-main",
+        "objecting/object": "dev-master || dev-main",
         "php": "^8.4",
+        "viewing/view": "dev-master || dev-main",
         "doctrine/orm": "^3.3",
         "psr/log": "^3.0",
         "symfony/console": "^8.1",
@@ -35,12 +41,23 @@
             "App\\Delivering\\Tests\\": "tests/"
         }
     },
+    "repositories": [
+        {"type": "path", "url": "../Cruding", "options": {"symlink": true}},
+        {"type": "path", "url": "../Collectioning", "options": {"symlink": true}},
+        {"type": "path", "url": "../Tabling", "options": {"symlink": true}},
+        {"type": "path", "url": "../Interfacing", "options": {"symlink": true}},
+        {"type": "path", "url": "../Objecting", "options": {"symlink": true}},
+        {"type": "path", "url": "../Viewing", "options": {"symlink": true}}
+    ],
     "config": {
         "sort-packages": true
     },
     "scripts": {
         "test": "@php vendor/bin/phpunit --configuration phpunit.xml.dist",
-        "test:coverage": "@php -d xdebug.mode=coverage vendor/bin/phpunit --configuration phpunit.xml.dist --branch-coverage --coverage-text=var/coverage/summary.txt",
+        "test:coverage": [
+            "@php -r \"if (!is_dir('var/coverage')) { mkdir('var/coverage', 0777, true); }\"",
+            "@php -d xdebug.mode=coverage vendor/bin/phpunit --configuration phpunit.xml.dist --path-coverage --coverage-text=var/coverage/summary.txt"
+        ],
         "cs:check": "php-cs-fixer fix --dry-run --diff --verbose",
         "cs:fix": "php-cs-fixer fix --verbose",
         "phpstan": "phpstan analyse --configuration=phpstan.neon --memory-limit=1G",
