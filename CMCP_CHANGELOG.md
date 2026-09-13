@@ -89,5 +89,5 @@ We have a verified local baseline, normative canon mapping, and a bounded RC wor
 
 - RC-critical dependency ownership, Objecting lifecycle ownership, reproducible coverage tooling, idempotency/receipt persistence, provider configuration boundaries, telemetry classifications, and operational status contracts are materially verified.
 - Growth remains deliberately outside RC: additional providers/channels, richer delivery analytics/dashboard UX, and broader provider-path coverage toward Canon040 target thresholds.
-- Final acceptance requires only repository diff/worktree/upstream inspection and coherent Git integration of this bounded change set.
+- Final acceptance completed: the bounded RC change set was reviewed, committed with a signed Git commit, pushed to `origin/refactor/delivering-canonicalization-20260905`, and the post-push branch was clean with `ahead=0` / `behind=0`.
 
