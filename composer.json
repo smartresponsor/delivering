@@ -6,11 +6,12 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "cruding/crud": "dev-master || dev-main",
-        "interfacing/interface": "dev-master || dev-main",
-        "objecting/object": "dev-master || dev-main",
+        "cruding/crud": "dev-master",
+        "ext-sodium": "*",
+        "interfacing/interface": "dev-master",
+        "objecting/object": "dev-master",
         "php": "^8.4",
-        "viewing/view": "dev-master || dev-main",
+        "viewing/view": "dev-master",
         "doctrine/orm": "^3.3",
         "psr/log": "^3.0",
         "symfony/console": "^8.1",
@@ -42,12 +43,12 @@
         }
     },
     "repositories": [
-        {"type": "path", "url": "../Cruding", "options": {"symlink": true}},
-        {"type": "path", "url": "../Collectioning", "options": {"symlink": true}},
-        {"type": "path", "url": "../Tabling", "options": {"symlink": true}},
-        {"type": "path", "url": "../Interfacing", "options": {"symlink": true}},
-        {"type": "path", "url": "../Objecting", "options": {"symlink": true}},
-        {"type": "path", "url": "../Viewing", "options": {"symlink": true}}
+        {"type": "path", "url": "../Cruding", "options": {"symlink": true, "versions": {"cruding/crud": "dev-master"}}},
+        {"type": "path", "url": "../Collectioning", "options": {"symlink": true, "versions": {"collectioning/collection": "dev-master"}}},
+        {"type": "path", "url": "../Tabling", "options": {"symlink": true, "versions": {"tabling/table": "dev-master"}}},
+        {"type": "path", "url": "../Interfacing", "options": {"symlink": true, "versions": {"interfacing/interface": "dev-master"}}},
+        {"type": "path", "url": "../Objecting", "options": {"symlink": true, "versions": {"objecting/object": "dev-master"}}},
+        {"type": "path", "url": "../Viewing", "options": {"symlink": true, "versions": {"viewing/view": "dev-master"}}}
     ],
     "config": {
         "sort-packages": true

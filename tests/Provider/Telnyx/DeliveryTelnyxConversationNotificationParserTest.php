@@ -76,12 +76,11 @@ final class DeliveryTelnyxConversationNotificationParserTest extends TestCase
         }
     }
 
-    public function testEmptyAndNonStringOptionalFieldsAreOmitted(): void
+    public function testRejectNotificationWithoutRecognizedStringFields(): void
     {
         $parser = new DeliveryTelnyxConversationNotificationParser('+13465550101');
-        $message = $parser->parse('{"customer_name":"","customer_phone":42,"service":null}', '1784944200');
 
-        self::assertNotNull($message);
-        self::assertSame('New AI lead', $message->body);
+        $this->expectException(UnexpectedValueException::class);
+        $parser->parse('{"customer_name":"","customer_phone":42,"service":null}', '1784944200');
     }
 }

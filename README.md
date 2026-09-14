@@ -14,6 +14,8 @@ Delivering does not own chat rooms, conversations, domain event routing, CRM dat
 
 Register `App\Delivering\DeliveringBundle` in the host application, provide the required environment variables, and route `App\Delivering\Message\Command\Delivery\DeliverySendSms` to an asynchronous Messenger transport.
 
+The PHP Sodium extension is a runtime requirement because Telnyx webhook authenticity is verified with Ed25519 before any payload parsing or dispatch occurs.
+
 ```dotenv
 DELIVERING_TELNYX_API_KEY=
 DELIVERING_TELNYX_FROM=
