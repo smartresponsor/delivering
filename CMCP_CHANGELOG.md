@@ -150,3 +150,24 @@ We have a material RC hardening patch grounded in current code, textual canon, d
 
 RC-critical ingress/package hardening is verified. The original signed change set was pushed, then replayed onto a fresh branch from current `origin/master`; Git correctly skipped the already-merged prior coverage commit. PR #7 was closed unmerged because it repeated prior history; clean PR #8 contains only this bounded change set and is mergeable. No pull-request workflow runs are registered for the current head. Remaining authorized tail: merge PR #8 and verify final repository/upstream state.
 
+## 2026-09-14 deterministic push-provider fixture closure
+
+### Provider contract materialization
+
+- Continued from current `origin/master` after ingress/package hardening was already merged; isolated this pass on `fix/delivering-provider-fixtures-20260914`.
+- Added deterministic offline APNs and FCM HTTP contract coverage using Symfony `MockHttpClient` and fixed test-only EC/RSA PEM fixtures. No production credentials or external provider calls are used.
+- APNs coverage now executes sandbox endpoint selection, provider message-id success, permanent invalid-recipient classification, and transient retry-delay handling.
+- FCM coverage now executes OAuth token acquisition, access-token caching across sends, successful send response parsing, permanent invalid-recipient classification, transient send retry handling, and OAuth failure normalization.
+
+### Production defect found and repaired
+
+- Deterministic FCM execution exposed a service-account parsing defect: `DELIVERING_FCM_SERVICE_ACCOUNT_JSON` was normalized with `str_replace('\\n', "\n", ...)` before `json_decode`, which can corrupt otherwise valid JSON containing an escaped PEM private key.
+- `DeliveryFcmPushProvider` now decodes and validates the JSON first, then normalizes escaped newlines only on the decoded `private_key` field before JWT signing.
+
+### Verification
+
+- `composer quality`: PASS — PHP-CS-Fixer 0 fixable files, PHPStan 0 errors, PHPUnit 95 tests / 267 assertions / 2 pre-existing environment-dependent skips.
+- `composer test:coverage`: PASS.
+- Coverage moved from Methods 66.06% / Branches 75.76% / Lines 78.70% to Methods 67.89% (74/109) / Branches 84.46% (614/727) / Lines 94.71% (859/907).
+- Canon040 branch and line targets are now exceeded with material provider-path evidence. Remaining method-percentage debt is dominated by path-completeness accounting in highly combinatorial methods rather than uncovered production lines; no artificial path-permutation tests are added solely to inflate that metric.
+

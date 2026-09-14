@@ -97,13 +97,14 @@ final class DeliveryFcmPushProvider implements DeliveryPushProviderInterface
         if (null !== $this->accessToken && time() < $this->accessTokenExpiresAt - 60) {
             return $this->accessToken;
         }
-        $account = $this->decodeMap(str_replace('\\n', "\n", $this->serviceAccountJson), 'FCM service account JSON');
+        $account = $this->decodeMap($this->serviceAccountJson, 'FCM service account JSON');
         $email = $account['client_email'] ?? null;
         $privateKey = $account['private_key'] ?? null;
         $tokenUri = $account['token_uri'] ?? 'https://oauth2.googleapis.com/token';
         if (!is_string($email) || '' === $email || !is_string($privateKey) || '' === $privateKey || !is_string($tokenUri) || '' === $tokenUri) {
             throw new DeliveryPermanentTransportException('FCM service account JSON is incomplete.');
         }
+        $privateKey = str_replace('\\n', "\n", $privateKey);
         $now = time();
         $assertion = DeliveryJwtSigner::rs256([
             'iss' => $email,
