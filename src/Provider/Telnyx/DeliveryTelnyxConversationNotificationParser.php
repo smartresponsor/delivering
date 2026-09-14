@@ -46,11 +46,17 @@ final readonly class DeliveryTelnyxConversationNotificationParser
         }
 
         $lines = ['New AI lead'];
+        $hasRecognizedField = false;
         foreach (self::FIELD_LABELS as $field => $label) {
             $value = $document[$field] ?? null;
             if (is_string($value) && '' !== $value) {
+                $hasRecognizedField = true;
                 $lines[] = $label.': '.$value;
             }
+        }
+
+        if (!$hasRecognizedField) {
+            throw new UnexpectedValueException('Telnyx AI notification does not contain any recognized lead fields.');
         }
 
         $transportId = hash('sha256', $timestamp.'|'.$json);
