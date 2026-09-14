@@ -112,3 +112,41 @@ We have a verified local baseline, normative canon mapping, and a bounded RC wor
 - Canon040 branch target (>=70%) is exceeded. Lines are 13 covered lines short of 80%; methods remain below 80% because PHPUnit path coverage marks several combinatorial DTO/parser/provider methods incomplete despite 89–100% line/branch coverage in those classes.
 - Remaining debt is bounded primarily to cryptographic/external-provider APNs/FCM success/OAuth flows and combinatorial path completion. Artificial path permutations are not added solely to inflate the method metric; future work should use deterministic provider fixtures/crypto-capable CI to close that debt.
 
+## 2026-09-14 RC ingress and package-contract hardening
+
+### Reconnaissance and baseline
+
+- Workspace: `D:\PhpstormProjects\www\Delivering`; branch baseline `fix/delivering-webhook-coverage-20260913`, clean and synchronized with its upstream before changes.
+- Re-read Delivering `README.md`, `composer.json`, `composer.prod.json`, PHPUnit/PHPStan configuration, prior CMCP journal, Telnyx webhook controller/parsers/signature verifier, focused webhook tests, and the mandatory Objecting, Cruding, Viewing, Interfacing, Gating, and Canonization reference contracts.
+- Canonization textual rules consulted and mapped: Canon000/Canon018 (`delivering/delivery` => `App\\Delivering\\` + `Delivery*`), Canon001/Canon020 (role-first Symfony tree), Canon007 (literal PSR-4 identity), Canon008 (Composer/runtime dependency parity), Canon009 (standalone host boundary), Canon017 (runtime/docs parity), Canon019 (no alternate Domain/Port/Adapter taxonomy), and Canon021 (generic CRUD remains in Cruding). Root `AGENTS.md` additionally requires first-party sibling constraints and path-repository `options.versions` to pin `dev-master`.
+- Dependency contour verified: Objecting, Cruding, Viewing, and Interfacing are real runtime dependencies; Collectioning and Tabling remain path-repository visibility for Cruding's reachable local dependency graph rather than direct Delivering runtime dependencies.
+- Market/enterprise benchmark: mature webhook delivery systems emphasize signature verification, replay-window protection, idempotency, bounded retries/backoff, dead-letter/replay capability, and structured observability. Multi-provider portals, broad destination catalogs, and richer analytics remain growth scope rather than RC blockers.
+- Baseline gates: `composer validate --strict --check-lock` PASS; `composer quality` PASS with PHPStan 0 errors and PHPUnit 89 tests / 249 assertions / 2 environment-dependent skips.
+- RC-critical workstream selected: harden inbound Telnyx trust/shape boundary and package reproducibility. Concrete findings: unconditional Sodium API use was not declared as `ext-sodium`; sibling Composer constraints allowed `dev-main` contrary to local canon; local path repositories lacked canonical `dev-master` version pins; AI notification parsing accepted any signed JSON object without `data`, including payloads with no recognized lead field.
+- Growth workstream: additional delivery channels/providers, customer-facing replay/analytics UX, broader destination support, and deterministic external-provider success fixtures remain post-RC.
+
+### Material implementation
+
+- Declared `ext-sodium` in development and production manifests so Ed25519 verification cannot become an undeclared runtime capability.
+- Canonicalized first-party sibling requirements to exact `dev-master` and pinned every local first-party path repository through `options.versions`.
+- Tightened the Telnyx AI notification parser so at least one recognized non-empty string lead field is required before creating and dispatching `DeliverySendSms`.
+- Added endpoint/parser regression coverage and documented the Sodium runtime requirement.
+
+### What do we have? What remains?
+
+We have a material RC hardening patch grounded in current code, textual canon, dependency contracts, and webhook reliability practice. Remaining work is Composer lock reconciliation, complete quality/coverage verification, diff review, Git integration, push, and post-push cleanliness/upstream verification.
+
+### Verification and integration readiness
+
+- Scoped Composer reconciliation completed. The lock now resolves first-party path packages through canonical `dev-master`; the refresh also moved `doctrine/orm` from 3.7.0 to the compatible 3.7.1 patch release. Composer reported no security advisories.
+- `composer validate --strict --check-lock`: PASS.
+- `composer quality`: PASS — PHP-CS-Fixer 0 fixable files, PHPStan 0 errors, PHPUnit 90 tests / 250 assertions / 2 environment-dependent skips.
+- `composer test:coverage`: PASS. Coverage evidence: Methods 66.06% (72/109), Branches 75.76% (522/689), Lines 78.70% (713/906). The Telnyx webhook controller remains 100% methods/paths/branches/lines; the AI notification parser remains 100% lines with 95.65% branch coverage.
+- `composer audit`: PASS — no security vulnerability advisories found.
+- Code Memory reconnaissance: Delivering has no repository-local `memory:scope:resolve` script; Console MCP resolves the active graph to the repository-local Delivering project with the workspace graph as read-only navigation. No tracked AsciiDoc documentation was found in this repository.
+- Final diff review confirms all source mutations remain inside Delivering responsibility: package metadata/lock, repository documentation/journal, Telnyx ingress parser, and focused tests. No generic CRUD, Viewing, Interfacing, Objecting, Gating, Canonization, or Navigating implementation was modified.
+
+### Что имеем? Что осталось?
+
+RC-critical ingress/package hardening is verified and ready for Git integration. Remaining authorized tail: create the coherent signed commit, push the current branch, then verify final clean worktree, HEAD, upstream parity, and branch state.
+

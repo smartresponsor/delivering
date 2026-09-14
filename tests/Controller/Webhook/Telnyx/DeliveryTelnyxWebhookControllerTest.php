@@ -41,6 +41,17 @@ final class DeliveryTelnyxWebhookControllerTest extends TestCase
         self::assertSame([], $bus->messages);
     }
 
+    public function testRejectSignedAiPayloadWithoutRecognizedLeadFields(): void
+    {
+        [$verifier, $request] = $this->signedRequest('{"unexpected":"value"}');
+        $bus = new DeliveryRecordingBus();
+
+        $response = $this->controller($verifier, $bus)($request);
+
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame([], $bus->messages);
+    }
+
     public function testDispatchAiNotificationWithoutPassingThroughReceiptParser(): void
     {
         $payload = '{"customer_name":"Alex","service":"TV mounting"}';
