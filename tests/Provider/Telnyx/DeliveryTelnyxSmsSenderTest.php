@@ -71,4 +71,32 @@ final class DeliveryTelnyxSmsSenderTest extends TestCase
         $this->expectException(DeliveryTransportException::class);
         $sender->send('+13465550101', 'Body', 'corr-1', 'idem-1');
     }
+
+    public function testMissingApiKeyIsPermanent(): void
+    {
+        $sender = new DeliveryTelnyxSmsSender(new MockHttpClient(), '', '+13465550100');
+
+        $this->expectException(DeliveryPermanentTransportException::class);
+        $sender->send('+13465550101', 'Body', 'corr-1', 'idem-1');
+    }
+
+    public function testInvalidSenderNumberIsPermanent(): void
+    {
+        $sender = new DeliveryTelnyxSmsSender(new MockHttpClient(), 'test-key', 'invalid');
+
+        $this->expectException(DeliveryPermanentTransportException::class);
+        $sender->send('+13465550101', 'Body', 'corr-1', 'idem-1');
+    }
+
+    public function testMissingProviderMessageIdIsRetryable(): void
+    {
+        $sender = new DeliveryTelnyxSmsSender(
+            new MockHttpClient(new MockResponse('{"data":{}}', ['http_code' => 200])),
+            'test-key',
+            '+13465550100',
+        );
+
+        $this->expectException(DeliveryTransportException::class);
+        $sender->send('+13465550101', 'Body', 'corr-1', 'idem-1');
+    }
 }

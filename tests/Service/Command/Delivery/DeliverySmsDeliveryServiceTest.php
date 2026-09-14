@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 final class DeliverySmsDeliveryServiceTest extends TestCase
 {
@@ -83,5 +84,53 @@ final class DeliverySmsDeliveryServiceTest extends TestCase
         $result = $service->send(new DeliverySendSms('+13465550101', 'Body', 'corr-1', 'idem-1'));
 
         self::assertSame($existing, $result);
+    }
+
+    public function testExistingDeliveryIsReturnedBeforePersistOrSend(): void
+    {
+        $existing = new DeliveryDelivery('idem-1', 'corr-1', 'sms', 'telnyx', '+13465550101');
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->method('findOneBy')->willReturn($existing);
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->method('getRepository')->willReturn($repository);
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn($manager);
+        $sender = $this->createMock(DeliverySmsSenderInterface::class);
+        $sender->expects(self::never())->method('send');
+
+        $result = (new DeliverySmsDeliveryService($registry, $sender))->send(
+            new DeliverySendSms('+13465550101', 'Body', 'corr-1', 'idem-1'),
+        );
+
+        self::assertSame($existing, $result);
+    }
+
+    public function testProviderFailureMarksDeliveryFailedAndRethrows(): void
+    {
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->method('findOneBy')->willReturn(null);
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->method('getRepository')->willReturn($repository);
+        $manager->expects(self::exactly(3))->method('flush');
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn($manager);
+        $sender = $this->createMock(DeliverySmsSenderInterface::class);
+        $sender->method('send')->willThrowException(new RuntimeException('provider failed'));
+
+        $this->expectException(RuntimeException::class);
+        (new DeliverySmsDeliveryService($registry, $sender))->send(
+            new DeliverySendSms('+13465550101', 'Body', 'corr-1', 'idem-1'),
+        );
+    }
+
+    public function testMissingEntityManagerFailsExplicitly(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn(null);
+
+        $this->expectException(RuntimeException::class);
+        (new DeliverySmsDeliveryService($registry, $this->createMock(DeliverySmsSenderInterface::class)))->send(
+            new DeliverySendSms('+13465550101', 'Body', 'corr-1', 'idem-1'),
+        );
     }
 }

@@ -6,19 +6,37 @@ namespace App\Delivering\Tests\Operational;
 
 use App\Delivering\Command\Status\Push\DeliveryPushStatusCommand;
 use App\Delivering\Command\Status\Queue\DeliveryQueueStatusCommand;
+use App\Delivering\Entity\Delivery\DeliveryDelivery;
+use App\Delivering\Enum\DeliveryDeliveryStatus;
 use App\Delivering\Event\DeliveryPushSubscriptionInvalidated;
 use App\Delivering\Exception\DeliveryPermanentTransportException;
 use App\Delivering\Exception\DeliveryTransportException;
+use App\Delivering\Message\Command\Delivery\DeliverySendPush;
+use App\Delivering\Message\Command\Delivery\DeliverySendSms;
+use App\Delivering\Message\Command\Receipt\DeliveryProcessReceipt;
+use App\Delivering\MessageHandler\Command\Delivery\DeliverySendPushHandler;
+use App\Delivering\MessageHandler\Command\Delivery\DeliverySendSmsHandler;
+use App\Delivering\MessageHandler\Command\Receipt\DeliveryProcessReceiptHandler;
+use App\Delivering\Service\Command\Delivery\DeliveryPushDeliveryService;
 use App\Delivering\Service\Command\Delivery\DeliveryPushSenderRouter;
+use App\Delivering\Service\Command\Delivery\DeliverySmsDeliveryService;
 use App\Delivering\Service\Command\Delivery\DeliveryUnavailablePushTokenResolver;
 use App\Delivering\Service\Observability\DeliveryDeliveryTelemetryService;
 use App\Delivering\Service\Query\Push\DeliveryPushReadinessService;
 use App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushProviderInterface;
+use App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushSenderInterface;
+use App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushTokenResolverInterface;
+use App\Delivering\ServiceInterface\Command\Delivery\DeliverySmsSenderInterface;
+use App\Delivering\ServiceInterface\Command\Receipt\DeliveryReceiptRecorderInterface;
 use App\Delivering\ServiceInterface\Query\Queue\DeliveryQueueStatusProviderInterface;
 use App\Delivering\ValueObject\Queue\DeliveryQueueStatus;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
+use Psr\Log\NullLogger;
 use Stringable;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -133,5 +151,83 @@ final class DeliveryOperationalContractTest extends TestCase
         self::assertSame('transient', $logger->records[2]['context']['failure_classification']);
         self::assertSame('permanent', $logger->records[3]['context']['failure_classification']);
         self::assertSame('unknown', $logger->records[4]['context']['failure_classification']);
+    }
+
+    public function testMessageHandlersDelegateThroughCanonicalServices(): void
+    {
+        $sms = new DeliverySendSms('+13465550101', 'Body', 'corr-sms', 'idem-sms');
+        $smsService = new DeliverySmsDeliveryService(
+            $this->registryWithExisting(new DeliveryDelivery('idem-sms', 'corr-sms', 'sms', 'telnyx', '+13465550101')),
+            $this->createMock(DeliverySmsSenderInterface::class),
+        );
+        (new DeliverySendSmsHandler($smsService))($sms);
+
+        $push = new DeliverySendPush(
+            'android',
+            str_repeat('a', 64),
+            'app',
+            'Title',
+            'Body',
+            null,
+            [],
+            'corr-push',
+            'idem-push',
+        );
+        $pushService = new DeliveryPushDeliveryService(
+            $this->registryWithExisting(new DeliveryDelivery('idem-push', 'corr-push', 'push', 'fcm', 'token')),
+            $this->createMock(DeliveryPushSenderInterface::class),
+            $this->createMock(DeliveryPushTokenResolverInterface::class),
+            $this->createMock(\Symfony\Contracts\EventDispatcher\EventDispatcherInterface::class),
+            new NullLogger(),
+        );
+        (new DeliverySendPushHandler($pushService))($push);
+
+        $receipt = new DeliveryProcessReceipt(
+            'event',
+            'provider',
+            DeliveryDeliveryStatus::Delivered,
+            new DateTimeImmutable('2026-09-13T12:00:00+00:00'),
+            null,
+            null,
+        );
+        $recorder = $this->createMock(DeliveryReceiptRecorderInterface::class);
+        $recorder->expects(self::once())->method('record')->with($receipt);
+        (new DeliveryProcessReceiptHandler($recorder))($receipt);
+
+        self::addToAssertionCount(2);
+    }
+
+    public function testPushRouterSkipsUnsupportedProviderBeforeUsingMatchingProvider(): void
+    {
+        $unsupported = $this->createMock(DeliveryPushProviderInterface::class);
+        $unsupported->expects(self::once())->method('supports')->with('ios')->willReturn(false);
+        $unsupported->expects(self::never())->method('send');
+        $supported = $this->createMock(DeliveryPushProviderInterface::class);
+        $supported->expects(self::once())->method('supports')->with('ios')->willReturn(true);
+        $supported->expects(self::once())->method('send')->willReturn('matched');
+
+        self::assertSame(
+            'matched',
+            (new DeliveryPushSenderRouter([$unsupported, $supported]))->send('ios', 'token', 'app', 'Title', 'Body', null, [], 'corr', 'idem'),
+        );
+    }
+
+    public function testDeliveryIdentityAccessorIsStable(): void
+    {
+        $delivery = new DeliveryDelivery('idem-id', 'corr-id', 'sms', 'telnyx', '+13465550101');
+
+        self::assertSame((string) $delivery->id(), (string) $delivery->id());
+    }
+
+    private function registryWithExisting(DeliveryDelivery $delivery): ManagerRegistry
+    {
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->method('findOneBy')->willReturn($delivery);
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->method('getRepository')->willReturn($repository);
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn($manager);
+
+        return $registry;
     }
 }

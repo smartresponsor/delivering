@@ -39,13 +39,15 @@ final readonly class DeliveryTelnyxWebhookController
 
         try {
             $notification = $this->conversationNotificationParser->parse($payload, $timestamp);
+            if (null !== $notification) {
+                $this->messageBus->dispatch($notification);
+
+                return new JsonResponse(['status' => 'accepted']);
+            }
+
             $receipt = $this->receiptParser->parse($payload);
         } catch (UnexpectedValueException) {
             return new JsonResponse(['status' => 'invalid_payload'], Response::HTTP_BAD_REQUEST);
-        }
-
-        if (null !== $notification) {
-            $this->messageBus->dispatch($notification);
         }
 
         if (null !== $receipt) {

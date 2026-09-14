@@ -109,6 +109,65 @@ final class DeliveryPushDeliveryServiceTest extends TestCase
         self::assertSame($existing, $result);
     }
 
+    public function testMissingEntityManagerFailsExplicitly(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn(null);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Doctrine entity manager for DeliveryDelivery is not available.');
+        (new DeliveryPushDeliveryService(
+            $registry,
+            $this->createMock(DeliveryPushSenderInterface::class),
+            $this->createMock(DeliveryPushTokenResolverInterface::class),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
+        ))->send($this->message());
+    }
+
+    public function testConcurrentDuplicateWithoutRecoveredDeliveryRethrowsConstraintViolation(): void
+    {
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->method('findOneBy')->willReturn(null);
+        $firstManager = $this->createMock(EntityManagerInterface::class);
+        $firstManager->method('getRepository')->willReturn($repository);
+        $firstManager->method('flush')->willThrowException($this->createMock(UniqueConstraintViolationException::class));
+        $secondManager = $this->createMock(EntityManagerInterface::class);
+        $secondManager->method('getRepository')->willReturn($repository);
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturnOnConsecutiveCalls($firstManager, $secondManager);
+
+        $this->expectException(UniqueConstraintViolationException::class);
+        (new DeliveryPushDeliveryService(
+            $registry,
+            $this->createMock(DeliveryPushSenderInterface::class),
+            $this->createMock(DeliveryPushTokenResolverInterface::class),
+            $this->createMock(EventDispatcherInterface::class),
+            new NullLogger(),
+        ))->send($this->message());
+    }
+
+    public function testInvalidationFeedbackFailureDoesNotMaskProviderFailure(): void
+    {
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->method('findOneBy')->willReturn(null);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('getRepository')->willReturn($repository);
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn($entityManager);
+        $resolver = $this->createMock(DeliveryPushTokenResolverInterface::class);
+        $resolver->method('resolve')->willReturn('device-token');
+        $failure = new DeliveryPermanentTransportException('invalid token', reasonCode: 'UNREGISTERED', recipientInvalid: true);
+        $sender = $this->createMock(DeliveryPushSenderInterface::class);
+        $sender->method('send')->willThrowException($failure);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher->method('dispatch')->willThrowException(new \RuntimeException('feedback failed'));
+
+        $this->expectExceptionObject($failure);
+        (new DeliveryPushDeliveryService($registry, $sender, $resolver, $dispatcher, new NullLogger()))
+            ->send($this->message());
+    }
+
     private function message(): DeliverySendPush
     {
         return new DeliverySendPush(
