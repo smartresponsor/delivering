@@ -12,7 +12,7 @@ Delivering does not own chat rooms, conversations, domain event routing, CRM dat
 
 ## Host integration
 
-Register `App\Delivering\DeliveringBundle` in the host application, provide the required environment variables, and route `App\Delivering\Message\Command\Delivery\DeliveringSendSms` to an asynchronous Messenger transport.
+Register `App\Delivering\DeliveringBundle` in the host application, provide the required environment variables, and route `App\Delivering\Message\Command\Delivery\DeliverySendSms` to an asynchronous Messenger transport.
 
 ```dotenv
 DELIVERING_TELNYX_API_KEY=
@@ -40,10 +40,10 @@ The command returns success only when both APNs and FCM credentials plus their `
 
 ```text
 Domain workflow
-    -> DeliveringSendSms / DeliveringSendPush
+    -> DeliverySendSms / DeliverySendPush
     -> Symfony Messenger
-    -> DeliveringSendSmsHandler / DeliveringSendPushHandler
-    -> DeliveringTelnyxSmsSender / DeliveringPushSenderRouter
+    -> DeliverySendSmsHandler / DeliverySendPushHandler
+    -> DeliveryTelnyxSmsSender / DeliveryPushSenderRouter
     -> provider adapter (Telnyx / APNs / FCM)
 ```
 
