@@ -61,4 +61,27 @@ final class DeliveryTelnyxConversationNotificationParserTest extends TestCase
         $this->expectException(UnexpectedValueException::class);
         $parser->parse('{invalid', '1784944200');
     }
+
+    public function testRejectNonObjectAndInvalidTimestamp(): void
+    {
+        $parser = new DeliveryTelnyxConversationNotificationParser('+13465550101');
+
+        foreach ([['null', '1784944200'], ['{}', 'invalid']] as [$payload, $timestamp]) {
+            try {
+                $parser->parse($payload, $timestamp);
+                self::fail('Expected malformed AI notification to be rejected.');
+            } catch (UnexpectedValueException) {
+                self::addToAssertionCount(1);
+            }
+        }
+    }
+
+    public function testEmptyAndNonStringOptionalFieldsAreOmitted(): void
+    {
+        $parser = new DeliveryTelnyxConversationNotificationParser('+13465550101');
+        $message = $parser->parse('{"customer_name":"","customer_phone":42,"service":null}', '1784944200');
+
+        self::assertNotNull($message);
+        self::assertSame('New AI lead', $message->body);
+    }
 }

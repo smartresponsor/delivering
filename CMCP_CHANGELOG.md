@@ -91,3 +91,24 @@ We have a verified local baseline, normative canon mapping, and a bounded RC wor
 - Growth remains deliberately outside RC: additional providers/channels, richer delivery analytics/dashboard UX, and broader provider-path coverage toward Canon040 target thresholds.
 - Final acceptance completed: the bounded RC change set was reviewed, committed with a signed Git commit, pushed to `origin/refactor/delivering-canonicalization-20260905`, and the post-push branch was clean with `ahead=0` / `behind=0`.
 
+## 2026-09-13 Canon040 post-RC coverage closure
+
+### Iteration 1 — baseline and targeting
+
+- Started from merged `origin/master` on `test/delivering-canon040-coverage-20260913` after PR #5 landed.
+- Baseline: Methods 50.46% (55/109), Branches 67.01% (449/670), Lines 69.59% (627/901).
+- Selected branch-dense delivery boundaries and failure exits rather than expanding provider/channel scope.
+
+### Iteration 2 — boundary coverage and correctness
+
+- Expanded Telnyx receipt/conversation parser validation, Messenger telemetry lifecycle coverage, SMS orchestration failure/idempotency coverage, handler delegation, push-router selection, delivery identity, APNs/FCM validation, Telnyx sender/signature validation, and push-delivery failure recovery.
+- Found and fixed a real webhook routing defect: a valid Telnyx AI notification was parsed successfully and then incorrectly forced through the receipt parser, causing `400 invalid_payload`. AI notifications now dispatch and return accepted before receipt parsing; a regression suite covers invalid signatures, malformed payloads, AI notifications, receipts, and ignored events.
+
+### Iteration 3 — final bounded verification
+
+- PHP lint for all changed PHP: PASS.
+- Composer validation: PASS. PHPStan level 8: PASS with 0 errors. PHPUnit: PASS — 89 tests, 249 assertions, 2 environment-dependent skips. Coverage execution: PASS.
+- Final evidence: Methods 66.06% (72/109), Branches 75.69% (520/687), Lines 78.60% (709/902).
+- Canon040 branch target (>=70%) is exceeded. Lines are 13 covered lines short of 80%; methods remain below 80% because PHPUnit path coverage marks several combinatorial DTO/parser/provider methods incomplete despite 89–100% line/branch coverage in those classes.
+- Remaining debt is bounded primarily to cryptographic/external-provider APNs/FCM success/OAuth flows and combinatorial path completion. Artificial path permutations are not added solely to inflate the method metric; future work should use deterministic provider fixtures/crypto-capable CI to close that debt.
+

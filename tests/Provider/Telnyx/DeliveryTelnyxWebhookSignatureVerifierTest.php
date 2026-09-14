@@ -43,4 +43,17 @@ final class DeliveryTelnyxWebhookSignatureVerifierTest extends TestCase
             new DateTimeImmutable('@1000'),
         ));
     }
+
+    public function testRejectMalformedVerificationInputs(): void
+    {
+        $keyPair = sodium_crypto_sign_keypair();
+        $publicKey = sodium_crypto_sign_publickey($keyPair);
+        $validKey = base64_encode($publicKey);
+        $now = new DateTimeImmutable('@1785067200');
+
+        self::assertFalse((new DeliveryTelnyxWebhookSignatureVerifier(''))->verify('payload', 'signature', '1785067200', $now));
+        self::assertFalse((new DeliveryTelnyxWebhookSignatureVerifier($validKey))->verify('payload', '', '1785067200', $now));
+        self::assertFalse((new DeliveryTelnyxWebhookSignatureVerifier($validKey))->verify('payload', 'signature', 'invalid', $now));
+        self::assertFalse((new DeliveryTelnyxWebhookSignatureVerifier($validKey))->verify('payload', 'not-base64', '1785067200', $now));
+    }
 }

@@ -68,4 +68,47 @@ final class DeliveryPushProviderValidationTest extends TestCase
         $this->expectExceptionMessage('FCM service account JSON is incomplete.');
         $provider->send('token', 'app', 'Title', 'Body', null, [], 'corr', 'idem');
     }
+
+    public function testApnsRejectsMalformedTopicMap(): void
+    {
+        $provider = new DeliveryApnsPushProvider(new MockHttpClient(), 'team', 'key', 'private', 'not-json');
+
+        $this->expectException(DeliveryPermanentTransportException::class);
+        $this->expectExceptionMessage('APNs topic map must be valid JSON object.');
+        $provider->send('token', 'app', 'Title', 'Body', null, [], 'corr', 'idem');
+    }
+
+    public function testApnsRejectsInvalidEnvironmentBeforeSigning(): void
+    {
+        $provider = new DeliveryApnsPushProvider(
+            new MockHttpClient(),
+            'team',
+            'key',
+            'private',
+            '{"app":"topic"}',
+            'staging',
+        );
+
+        $this->expectException(DeliveryPermanentTransportException::class);
+        $this->expectExceptionMessage('APNs environment must be development or production.');
+        $provider->send('token', 'app', 'Title', 'Body', null, [], 'corr', 'idem');
+    }
+
+    public function testFcmNormalizesPayloadBeforeServiceAccountValidation(): void
+    {
+        $provider = new DeliveryFcmPushProvider(new MockHttpClient(), '{}', '{"app":"project"}');
+
+        $this->expectException(DeliveryPermanentTransportException::class);
+        $this->expectExceptionMessage('FCM service account JSON is incomplete.');
+        $provider->send(
+            'token',
+            'app',
+            'Title',
+            'Body',
+            'https://example.test/action',
+            ['string' => 'value', 'number' => 42, 'nested' => ['a' => 1], 'null' => null],
+            'corr',
+            'idem',
+        );
+    }
 }

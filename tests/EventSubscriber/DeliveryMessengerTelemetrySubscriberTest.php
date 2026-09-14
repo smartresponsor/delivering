@@ -77,6 +77,27 @@ final class DeliveryMessengerTelemetrySubscriberTest extends TestCase
         self::assertSame([], $logger->records);
     }
 
+    public function testSubscribedEventsDeclareAllMessengerLifecycleHooks(): void
+    {
+        self::assertSame([
+            WorkerMessageHandledEvent::class => 'onHandled',
+            WorkerMessageRetriedEvent::class => 'onRetried',
+            WorkerMessageFailedEvent::class => 'onFailed',
+        ], DeliveryMessengerTelemetrySubscriber::getSubscribedEvents());
+    }
+
+    public function testIgnoredForeignMessagesDoNotLogForRetryOrTerminalFailure(): void
+    {
+        $logger = new DeliveryArrayLogger();
+        $subscriber = new DeliveryMessengerTelemetrySubscriber($logger);
+        $envelope = new Envelope(new \stdClass());
+
+        $subscriber->onRetried(new WorkerMessageRetriedEvent($envelope, 'async'));
+        $subscriber->onFailed(new WorkerMessageFailedEvent($envelope, 'async', new \RuntimeException('foreign')));
+
+        self::assertSame([], $logger->records);
+    }
+
     private function envelope(): Envelope
     {
         return new Envelope(new DeliverySendSms(
