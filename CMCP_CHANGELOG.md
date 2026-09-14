@@ -148,5 +148,5 @@ We have a material RC hardening patch grounded in current code, textual canon, d
 
 ### Что имеем? Что осталось?
 
-RC-critical ingress/package hardening is verified and ready for Git integration. Remaining authorized tail: create the coherent signed commit, push the current branch, then verify final clean worktree, HEAD, upstream parity, and branch state.
+RC-critical ingress/package hardening is verified. The original signed change set was pushed, then replayed onto a fresh branch from current `origin/master`; Git correctly skipped the already-merged prior coverage commit. PR #7 was closed unmerged because it repeated prior history; clean PR #8 contains only this bounded change set and is mergeable. No pull-request workflow runs are registered for the current head. Remaining authorized tail: merge PR #8 and verify final repository/upstream state.
 
