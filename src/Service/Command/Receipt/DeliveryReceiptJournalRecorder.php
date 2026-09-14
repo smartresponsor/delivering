@@ -20,7 +20,7 @@ final readonly class DeliveryReceiptJournalRecorder implements DeliveryReceiptRe
     public function record(DeliveryProcessReceipt $receipt): void
     {
         $directory = dirname($this->journalPath);
-        if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) {
+        if (!is_dir($directory) && !@mkdir($directory, 0770, true) && !is_dir($directory)) {
             throw new RuntimeException(sprintf('Unable to create delivery receipt journal directory "%s".', $directory));
         }
 
