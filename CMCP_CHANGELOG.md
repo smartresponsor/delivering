@@ -171,3 +171,12 @@ RC-critical ingress/package hardening is verified. The original signed change se
 - Coverage moved from Methods 66.06% / Branches 75.76% / Lines 78.70% to Methods 67.89% (74/109) / Branches 84.46% (614/727) / Lines 94.71% (859/907).
 - Canon040 branch and line targets are now exceeded with material provider-path evidence. Remaining method-percentage debt is dominated by path-completeness accounting in highly combinatorial methods rather than uncovered production lines; no artificial path-permutation tests are added solely to inflate that metric.
 
+## 2026-09-14 deterministic crypto and journal boundary closure
+
+- Replaced environment-dependent JWT key generation in `DeliveryJwtSignerTest` with fixed test-only RSA/EC fixtures already representative of provider signing contracts; both RS256 and ES256 now execute deterministically on every run.
+- Added public-contract tests for invalid RSA/EC private keys so signing configuration failures are normalized as `DeliveryPermanentTransportException` rather than OpenSSL-specific behavior.
+- Added receipt journal filesystem-boundary coverage for an invalid parent path and hardened `DeliveryReceiptJournalRecorder` so directory-creation failures are converted to its documented `RuntimeException` without leaking a native PHP warning.
+- `composer quality`: PASS — PHP-CS-Fixer 0 fixable files, PHPStan 0 errors, PHPUnit 98/98 tests, 277 assertions, 0 skips, 0 warnings.
+- `composer test:coverage`: PASS. Final evidence: Methods 67.89% (74/109), Branches 84.87% (617/727), Lines 94.93% (861/907).
+- The unchanged method percentage despite additional executed crypto and filesystem paths further confirms that the remaining Canon040 method debt is path-completeness accounting in combinatorial methods, not missing line execution. No reflection/private-method probing or synthetic permutation padding was introduced.
+

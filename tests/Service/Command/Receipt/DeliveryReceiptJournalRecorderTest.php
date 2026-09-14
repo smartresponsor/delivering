@@ -39,4 +39,28 @@ final class DeliveryReceiptJournalRecorderTest extends TestCase
         unlink($journalPath);
         rmdir($directory);
     }
+
+    public function testRecordFailsWhenJournalParentIsAFile(): void
+    {
+        $parent = tempnam(sys_get_temp_dir(), 'delivering-parent-');
+        self::assertIsString($parent);
+        $recorder = new DeliveryReceiptJournalRecorder($parent.'/receipt.ndjson');
+        $receipt = new DeliveryProcessReceipt(
+            'event-failure',
+            'message-failure',
+            DeliveryDeliveryStatus::DeliveryFailed,
+            new DateTimeImmutable('2026-09-14T12:00:00+00:00'),
+            'provider_error',
+            'failure detail',
+        );
+
+        try {
+            $recorder->record($receipt);
+            self::fail('Expected invalid journal parent to fail.');
+        } catch (\RuntimeException $exception) {
+            self::assertStringContainsString('Unable to create delivery receipt journal directory', $exception->getMessage());
+        } finally {
+            unlink($parent);
+        }
+    }
 }
