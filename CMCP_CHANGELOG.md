@@ -180,3 +180,40 @@ RC-critical ingress/package hardening is verified. The original signed change se
 - `composer test:coverage`: PASS. Final evidence: Methods 67.89% (74/109), Branches 84.87% (617/727), Lines 94.93% (861/907).
 - The unchanged method percentage despite additional executed crypto and filesystem paths further confirms that the remaining Canon040 method debt is path-completeness accounting in combinatorial methods, not missing line execution. No reflection/private-method probing or synthetic permutation padding was introduced.
 
+## 2026-09-20 retry-backoff RC hardening
+
+### Reconnaissance and baseline
+
+- Workspace: `D:\\PhpstormProjects\\www\\Delivering`; clean branch `fix/delivering-deterministic-crypto-journal-20260914` at `15b4db21506f750e6651db8f44f3210aceab44b8`, synchronized with its upstream.
+- Re-read the current Delivering README, development/production Composer manifests, PHPUnit/PHPStan configuration, orchestration journal, SMS/push provider failure paths, idempotent delivery services, and the mandatory Objecting, Cruding, Viewing, Interfacing, Gating, and Canonization contracts available in the local workspace.
+- Canonization textual rules consulted and mapped for this pass: Canon000, Canon001, Canon007, Canon008, Canon009, Canon010, Canon017, Canon018, Canon019, Canon020, Canon021, Canon039, and Canon040. The target remains `delivering/delivery` => `App\\Delivering\\` + `Delivery*`, role-first Symfony topology, explicit sibling dependencies, no host/private implementation coupling, no alternate Domain/Port/Adapter tree, and no local generic CRUD.
+- Code Memory scope resolves Delivering as the only implementation project with the umbrella workspace graph navigation-only; no repository-local `memory:scope:resolve` script is declared.
+- Dependency contour remains explicit: Objecting, Cruding, Viewing, and Interfacing are runtime Composer dependencies; local development uses canonical `dev-master` path repositories, while production metadata carries package dependencies without local repository wiring.
+- Market/enterprise benchmark: mature Messenger/provider delivery stacks preserve recoverable versus permanent failures, stable idempotency, provider-directed retry timing, bounded backoff, failure transport/replay, and structured diagnostics. Symfony Messenger consumes retry delay from recoverable exceptions; FCM documents `Retry-After` and bounded backoff; Telnyx exposes rate-limit response headers and treats 429/5xx as retryable.
+- RC-critical workstream selected: preserve provider-directed backoff consistently across SMS and push. Current push adapters propagate `Retry-After` into `DeliveryTransportException`, while Telnyx classifies 429/5xx as recoverable but discards the response retry hint.
+- Growth workstream remains separate: additional providers/channels, delivery analytics/dashboard UX, broader operator replay UX, and provider-specific throughput optimization are post-RC unless a correctness defect makes them necessary.
+- Gates planned after implementation: Composer validate, quality, coverage, audit, applicable Gating checks, diff review, Git integration, push, and final branch/upstream verification.
+
+### Что имеем? Что осталось?
+
+We have a factual clean baseline, explicit canon mapping, dependency boundary, and one bounded RC correctness gap. Remaining work is implementation, regression coverage, full verification, journal closure, and Git integration.
+
+### Implementation and verification
+
+- Added `DeliveryRetryAfterParser` under the canonical `Service/Transport` role to parse RFC Retry-After delta-seconds and HTTP-date values once for all provider adapters.
+- APNs and FCM now delegate their existing retry-delay conversion to the shared parser; the former private duplicate parser was removed.
+- Telnyx SMS now reads response headers and preserves provider `Retry-After` as `DeliveryTransportException::getRetryDelay()` for 408/429/5xx retryable failures.
+- Added deterministic parser coverage and a Telnyx regression proving HTTP 429 + `Retry-After: 120` produces a 120000 ms Messenger retry delay.
+- First `composer quality` pass correctly failed on two missing imports (3 PHPStan `class.notFound` findings); the imports were repaired from current file state and the full gate was rerun.
+- `composer validate --no-interaction --strict --check-lock`: PASS.
+- `composer quality`: PASS — PHP-CS-Fixer 0 fixable files, PHPStan 0 errors, PHPUnit 100 tests / 282 assertions.
+- `composer test:coverage`: PASS — Lines 94.95% (865/911), Branches 84.87% (617/727), Methods 67.89% (74/109). Canon040 line/branch targets remain green; method coverage remains pre-existing warning debt below the 80% target but above HIGH_TEST_DEBT.
+- `composer audit --no-interaction`: PASS — no security advisories.
+- Console allowed checks: PHP lint PASS and `git diff --check` PASS.
+- Canonization `GUARD_MATRIX.md` confirms the textual Canon rule documents are normative and Gating is the executable projection. The current Console-MCP allowed-check policy has no direct Gating target command, so no equivalent Gating execution result is invented; deterministic Composer/PHP/Git evidence above is recorded instead.
+- Target scan found no tracked `docs/` surface and no tracked `.github/workflows` content requiring synchronization for this change.
+- No Objecting, Cruding, Viewing, Interfacing, Gating, Canonization, Navigating, host-App, persistence schema, CRUD, route, or presentation code was modified.
+
+### Что имеем? Что осталось?
+
+The bounded retry-backoff correctness gap is implemented and locally verified. Remaining authorized tail is Git integration (signed commit/push), remote integration-state inspection, and final post-integration workspace verification.
