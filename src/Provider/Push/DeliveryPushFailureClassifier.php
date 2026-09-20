@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Delivering\Provider\Push;
 
+use App\Delivering\Service\Transport\DeliveryRetryAfterParser;
+
 final class DeliveryPushFailureClassifier
 {
     /** @var list<string> */
@@ -38,7 +40,7 @@ final class DeliveryPushFailureClassifier
 
     public static function fcmRetryDelayMilliseconds(int $statusCode, ?string $errorCode, ?string $retryAfter, ?int $now = null): ?int
     {
-        $retryAfterMilliseconds = self::retryAfterMilliseconds($retryAfter, $now);
+        $retryAfterMilliseconds = DeliveryRetryAfterParser::milliseconds($retryAfter, $now);
         if (429 === $statusCode || 'QUOTA_EXCEEDED' === $errorCode) {
             return max(60_000, $retryAfterMilliseconds ?? 0);
         }
@@ -48,7 +50,7 @@ final class DeliveryPushFailureClassifier
 
     public static function apnsRetryDelayMilliseconds(?string $retryAfter, ?int $now = null): ?int
     {
-        return self::retryAfterMilliseconds($retryAfter, $now);
+        return DeliveryRetryAfterParser::milliseconds($retryAfter, $now);
     }
 
     public static function fcmInvalidatesRecipient(?string $errorCode): bool
@@ -64,24 +66,5 @@ final class DeliveryPushFailureClassifier
     public static function label(string $provider, int $statusCode, ?string $code): string
     {
         return sprintf('%s rejected the push request with HTTP %d%s.', $provider, $statusCode, null === $code ? '' : ' ('.$code.')');
-    }
-
-    private static function retryAfterMilliseconds(?string $retryAfter, ?int $now = null): ?int
-    {
-        if (null === $retryAfter || '' === trim($retryAfter)) {
-            return null;
-        }
-
-        $retryAfter = trim($retryAfter);
-        if (ctype_digit($retryAfter)) {
-            return max(0, (int) $retryAfter) * 1000;
-        }
-
-        $timestamp = strtotime($retryAfter);
-        if (false === $timestamp) {
-            return null;
-        }
-
-        return max(0, $timestamp - ($now ?? time())) * 1000;
     }
 }
