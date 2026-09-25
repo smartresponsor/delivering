@@ -2,7 +2,7 @@
     "name": "delivering/delivery",
     "description": "Provider-neutral outbound delivery component for the Smart Responsor ecosystem",
     "type": "symfony-bundle",
-    "license": "proprietary",
+    "license": "PolyForm-Noncommercial-1.0.0",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {

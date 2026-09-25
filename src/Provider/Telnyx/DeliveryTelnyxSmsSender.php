@@ -8,6 +8,7 @@ namespace App\Delivering\Provider\Telnyx;
 
 use App\Delivering\Exception\DeliveryPermanentTransportException;
 use App\Delivering\Exception\DeliveryTransportException;
+use App\Delivering\Service\Transport\DeliveryRetryAfterParser;
 use App\Delivering\ServiceInterface\Command\Delivery\DeliverySmsSenderInterface;
 use JsonException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -55,6 +56,7 @@ final readonly class DeliveryTelnyxSmsSender implements DeliverySmsSenderInterfa
 
             $statusCode = $response->getStatusCode();
             $content = $response->getContent(false);
+            $headers = $response->getHeaders(false);
         } catch (TransportExceptionInterface $exception) {
             throw new DeliveryTransportException('Telnyx transport request failed.', 0, $exception);
         }
@@ -67,7 +69,10 @@ final readonly class DeliveryTelnyxSmsSender implements DeliverySmsSenderInterfa
             );
 
             if ($statusCode >= 500 || in_array($statusCode, [408, 429], true)) {
-                throw new DeliveryTransportException($message);
+                throw new DeliveryTransportException(
+                    $message,
+                    retryDelay: DeliveryRetryAfterParser::milliseconds($headers['retry-after'][0] ?? null),
+                );
             }
 
             throw new DeliveryPermanentTransportException($message);

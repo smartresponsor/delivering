@@ -60,16 +60,23 @@ final class DeliveryTelnyxSmsSenderTest extends TestCase
         $sender->send('+13465550101', 'Body', 'corr-1', 'idem-1');
     }
 
-    public function testRateLimitIsRetryable(): void
+    public function testRateLimitPreservesProviderRetryAfter(): void
     {
         $sender = new DeliveryTelnyxSmsSender(
-            new MockHttpClient(new MockResponse('{"errors":[]}', ['http_code' => 429])),
+            new MockHttpClient(new MockResponse('{"errors":[]}', [
+                'http_code' => 429,
+                'response_headers' => ['retry-after: 120'],
+            ])),
             'test-key',
             '+13465550100',
         );
 
-        $this->expectException(DeliveryTransportException::class);
-        $sender->send('+13465550101', 'Body', 'corr-1', 'idem-1');
+        try {
+            $sender->send('+13465550101', 'Body', 'corr-1', 'idem-1');
+            self::fail('Expected retryable Telnyx rate-limit failure.');
+        } catch (DeliveryTransportException $exception) {
+            self::assertSame(120_000, $exception->getRetryDelay());
+        }
     }
 
     public function testMissingApiKeyIsPermanent(): void
