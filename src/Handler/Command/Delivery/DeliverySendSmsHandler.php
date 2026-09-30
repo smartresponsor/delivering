@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\MessageHandler\Command\Delivery;
+namespace App\Delivering\Handler\Command\Delivery;
 
 use App\Delivering\Message\Command\Delivery\DeliverySendSms;
 use App\Delivering\Service\Command\Delivery\DeliverySmsDeliveryService;

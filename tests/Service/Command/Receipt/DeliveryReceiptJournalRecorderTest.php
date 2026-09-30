@@ -8,7 +8,7 @@ namespace App\Delivering\Tests\Service\Command\Receipt;
 
 use App\Delivering\Enum\DeliveryDeliveryStatus;
 use App\Delivering\Message\Command\Receipt\DeliveryProcessReceipt;
-use App\Delivering\Service\Command\Receipt\DeliveryReceiptJournalRecorder;
+use App\Delivering\Recorder\Receipt\DeliveryReceiptJournalRecorder;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 

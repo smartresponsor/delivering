@@ -8,7 +8,7 @@ namespace App\Delivering\Controller\Webhook\Telnyx;
 
 use App\Delivering\Provider\Telnyx\DeliveryTelnyxConversationNotificationParser;
 use App\Delivering\Provider\Telnyx\DeliveryTelnyxReceiptParser;
-use App\Delivering\Provider\Telnyx\DeliveryTelnyxWebhookSignatureVerifier;
+use App\Delivering\Verifier\Telnyx\DeliveryTelnyxWebhookSignatureVerifier;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

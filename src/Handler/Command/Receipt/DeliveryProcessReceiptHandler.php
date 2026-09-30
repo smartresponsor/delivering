@@ -4,10 +4,10 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\MessageHandler\Command\Receipt;
+namespace App\Delivering\Handler\Command\Receipt;
 
 use App\Delivering\Message\Command\Receipt\DeliveryProcessReceipt;
-use App\Delivering\ServiceInterface\Command\Receipt\DeliveryReceiptRecorderInterface;
+use App\Delivering\RecorderInterface\Receipt\DeliveryReceiptRecorderInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

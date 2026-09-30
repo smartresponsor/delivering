@@ -32,7 +32,7 @@ services:
             $apiKey: '%env(default:delivering.telnyx.api_key:DELIVERING_TELNYX_API_KEY)%'
             $sender: '%env(default:delivering.telnyx.from:DELIVERING_TELNYX_FROM)%'
 
-    App\Delivering\Provider\Telnyx\DeliveryTelnyxWebhookSignatureVerifier:
+    App\Delivering\Verifier\Telnyx\DeliveryTelnyxWebhookSignatureVerifier:
         arguments:
             $publicKey: '%env(default:delivering.telnyx.public_key:DELIVERING_TELNYX_PUBLIC_KEY)%'
 
@@ -63,8 +63,8 @@ services:
             $fcmServiceAccountJson: '%env(default:delivering.fcm.service_account_json:DELIVERING_FCM_SERVICE_ACCOUNT_JSON)%'
             $fcmProjectMapJson: '%env(default:delivering.fcm.project_map:DELIVERING_FCM_PROJECT_MAP)%'
 
-    App\Delivering\ServiceInterface\Command\Receipt\DeliveryReceiptRecorderInterface:
-        alias: App\Delivering\Service\Command\Receipt\DeliveryDoctrineReceiptRecorder
+    App\Delivering\RecorderInterface\Receipt\DeliveryReceiptRecorderInterface:
+        alias: App\Delivering\Recorder\Receipt\DeliveryDoctrineReceiptRecorder
 
     App\Delivering\ServiceInterface\Command\Delivery\DeliverySmsSenderInterface:
         alias: App\Delivering\Provider\Telnyx\DeliveryTelnyxSmsSender
@@ -72,17 +72,17 @@ services:
     App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushSenderInterface:
         alias: App\Delivering\Service\Command\Delivery\DeliveryPushSenderRouter
 
-    App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushTokenResolverInterface:
-        alias: App\Delivering\Service\Command\Delivery\DeliveryUnavailablePushTokenResolver
+    App\Delivering\ResolverInterface\Delivery\DeliveryPushTokenResolverInterface:
+        alias: App\Delivering\Resolver\Delivery\DeliveryUnavailablePushTokenResolver
 
     App\Delivering\Service\Command\Delivery\DeliveryPushSenderRouter:
         arguments:
             $providers: !tagged_iterator delivering.push_provider
 
-    App\Delivering\ServiceInterface\Query\Queue\DeliveryQueueStatusProviderInterface:
-        alias: App\Delivering\Service\Query\Queue\DeliveryMessengerQueueStatusProvider
+    App\Delivering\ProviderInterface\Queue\DeliveryQueueStatusProviderInterface:
+        alias: App\Delivering\Provider\Queue\DeliveryMessengerQueueStatusProvider
 
-    App\Delivering\Service\Query\Queue\DeliveryMessengerQueueStatusProvider:
+    App\Delivering\Provider\Queue\DeliveryMessengerQueueStatusProvider:
         arguments:
             $asyncReceiver: '@messenger.transport.delivering_async'
             $failedReceiver: '@messenger.transport.delivering_failed'

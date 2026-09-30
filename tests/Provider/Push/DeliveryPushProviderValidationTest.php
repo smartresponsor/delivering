@@ -7,6 +7,7 @@ namespace App\Delivering\Tests\Provider\Push;
 use App\Delivering\Exception\DeliveryPermanentTransportException;
 use App\Delivering\Provider\Push\DeliveryApnsPushProvider;
 use App\Delivering\Provider\Push\DeliveryFcmPushProvider;
+use App\Delivering\Tests\Support\DeliveryTestKeyFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -123,7 +124,7 @@ final class DeliveryPushProviderValidationTest extends TestCase
             new MockHttpClient($response),
             'TEAM',
             'KEY',
-            $this->ecPrivateKey(),
+            DeliveryTestKeyFactory::ecPrivateKey(),
             '{"app":"com.example.app"}',
             'development',
         );
@@ -151,7 +152,7 @@ final class DeliveryPushProviderValidationTest extends TestCase
             new MockHttpClient(new MockResponse('{"reason":"Unregistered"}', ['http_code' => 410])),
             'TEAM',
             'KEY',
-            $this->ecPrivateKey(),
+            DeliveryTestKeyFactory::ecPrivateKey(),
             '{"app":"com.example.app"}',
         );
         try {
@@ -169,7 +170,7 @@ final class DeliveryPushProviderValidationTest extends TestCase
             ])),
             'TEAM',
             'KEY',
-            $this->ecPrivateKey(),
+            DeliveryTestKeyFactory::ecPrivateKey(),
             '{"app":"com.example.app"}',
         );
         try {
@@ -272,48 +273,10 @@ final class DeliveryPushProviderValidationTest extends TestCase
     {
         return json_encode([
             'client_email' => 'firebase@example.test',
-            'private_key' => <<<'PEM'
------BEGIN PRIVATE KEY-----
-MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCmpinQ9ZC7Fz1O
-RLzJXl2h5YZkouohI6AbRb0ocHHTPW2MyQzPCEktWsSg7D7Ni4vh9tfCNxmYBY/Z
-R3hv8gbrZ7c9kAHa07w95SLvrkHY3wVgagjDnNoSdis+X6gLbACB/u227Bjak1ts
-B02CbF4aHWZ5pNh9R3TBACrmfPhIn20qRkTLfIUJSgK7/8XpQZQ5mHg7ztcWPzzu
-URdLojuT9DokQ5wnIQAgZQD8erxo5oCPg4Ete4GK2ev6ILT9kIE10gx7zBIhzotp
-r0RI+PkxQZIJxedQWpiY8EeJjtq6u/yIpSkssttsJcv1ErdxJCmfETHN+PbRrto8
-PSUtwN+VAgMBAAECggEADI/dpWrquDJWGeEe6qj/3YqBOR3PZfnFrGNIkSn6EpEr
-VwpNZQp8BadgHLyiNqP3F+yfsqas+bjVm+yCHMzS47TY6xLraN+UGDBTvrB/4IVd
-5jjSpKLdYg3hUEgtUSsY1gkYSd/TNyAWK0xY9eS4VTdJIxCfjGtcrDMYiMZRKvF7
-xNcrOOhFiSWSgCvfbTLM8d/zBdO9JmTsEQt7HIYchEnleAsByVa9ri5A5bur9ioY
-y02KFcjMPmpFx6cxKA/yVVBst7YcocWYWStLrxms1ERVHwQwxXpNF1BDU46dMUPT
-x7tJBiZr3JgUyGGJ6DscltAdhTJ0LLTVgvTPYXMOwwKBgQDVg/257Z9WSxKreyaF
-/7UathaVGukuiJk0cvfZeGiVOZve7uZhr1KEicagQsAwe1BnI4OcI4P1tBd0LjRJ
-DobbxzgqsHH+totPnI31ajGFFZ2WuKKafW5AYwawBSfaBA7SvYMwtFtRFwDsH5U5
-HKcc2cJgeNgCsQ62WJWfxKonqwKBgQDHzuVzU+bicTBJINs0ghhqhRxTOhx+cUya
-Lza4oUAbormeMGhwYtx27bkatWXsQvLDswcWEeSUILKMkCIZj6YWgd1ksYuvOOG4
-HNkPqemh7+44RhwmujfyUVMBBgz8qR2lJfGtovVMJcz5/xXJV8ucIFhg5rf7OiWB
-VydEI2TVvwKBgQCpZLA1hBn3glPrjCaCBN6PtIqx/Mmmy2SQwe10sRx3116cPXi1
-YzzaPdxBZPPJAuxFB13w0BRvKFO7LrT4iPfhAWrEI3wtEnHv1Uqiu39SEFYYL5+B
-ZaXEm0vA9jYptzJzazrbtxsDeHaY3m2rA9po/zJBC16EtCfx7tG2EXbVRQKBgQCu
-I/X6Y5+Qr5Gjyo0B4HijLcwYBUecM+bNYmTQ2UjkTRh1dD8x5Be9V0bCrmJcXaTz
-Ru7gH0wWhcDXnS77FCVu7FQmVE8nse2X5xyO+El1J4V5ajFS1223NYWgGMPs2P/L
-VZyi9qnPagqRv+4fAvOj6NTd73dd77mMVocUbbyORQKBgD5WH7TPPLTgd4FgumB5
-ODLXBqUjjteKURD2+EC6UBI58q3dMiSj35yH93L0IPbQxn4QY8gPe24XXXVTbZUu
-PiJxRs27GTo4/UrwPMFalytdh42q9UXRXYVMa1BV1POEesUTIlZyRznY67TERoSx
-A+Q6e7vn/daVY5ezU9NV67tB
------END PRIVATE KEY-----
-PEM,
+            'private_key' => DeliveryTestKeyFactory::rsaPrivateKey(),
+
             'token_uri' => 'https://oauth2.googleapis.com/token',
         ], JSON_THROW_ON_ERROR);
     }
 
-    private function ecPrivateKey(): string
-    {
-        return <<<'PEM'
------BEGIN PRIVATE KEY-----
-MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3AonhNxooQPe7SSb
-R5pXvJZphkqcYTbAILO2YNcmv1qhRANCAAQpexmx1AimwyAw3iOGECbkNU3SH7mU
-fysI+oJiBwLPnNBk1aOqAoLezeO2H1ipBE4r5VDwG/NwXjqsnUV+Te+A
------END PRIVATE KEY-----
-PEM;
-    }
 }

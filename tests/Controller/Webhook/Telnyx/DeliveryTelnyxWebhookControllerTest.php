@@ -9,7 +9,7 @@ use App\Delivering\Message\Command\Delivery\DeliverySendSms;
 use App\Delivering\Message\Command\Receipt\DeliveryProcessReceipt;
 use App\Delivering\Provider\Telnyx\DeliveryTelnyxConversationNotificationParser;
 use App\Delivering\Provider\Telnyx\DeliveryTelnyxReceiptParser;
-use App\Delivering\Provider\Telnyx\DeliveryTelnyxWebhookSignatureVerifier;
+use App\Delivering\Verifier\Telnyx\DeliveryTelnyxWebhookSignatureVerifier;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

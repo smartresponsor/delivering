@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Delivering\Tests\Service\Query\Push;
 
 use App\Delivering\Service\Query\Push\DeliveryPushReadinessService;
+use App\Delivering\Tests\Support\DeliveryTestKeyFactory;
 use PHPUnit\Framework\TestCase;
 
 final class DeliveryPushReadinessServiceTest extends TestCase
@@ -26,13 +27,13 @@ final class DeliveryPushReadinessServiceTest extends TestCase
     {
         $serviceAccount = json_encode([
             'client_email' => 'firebase-admin@example.test',
-            'private_key' => '-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----',
+            'private_key' => DeliveryTestKeyFactory::rsaPrivateKey(),
         ], JSON_THROW_ON_ERROR);
 
         $status = (new DeliveryPushReadinessService(
             'TEAM123',
             'KEY123',
-            '-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----',
+            DeliveryTestKeyFactory::ecPrivateKey(),
             '{"one_tasker":"com.smartresponsor.mobile.onetasker"}',
             'production',
             $serviceAccount,

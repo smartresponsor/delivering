@@ -4,9 +4,9 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Service\Query\Queue;
+namespace App\Delivering\Provider\Queue;
 
-use App\Delivering\ServiceInterface\Query\Queue\DeliveryQueueStatusProviderInterface;
+use App\Delivering\ProviderInterface\Queue\DeliveryQueueStatusProviderInterface;
 use App\Delivering\ValueObject\Queue\DeliveryQueueStatus;
 use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 

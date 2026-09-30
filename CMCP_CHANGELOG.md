@@ -1,5 +1,25 @@
 # CMCP Orchestration Journal
 
+## engine-20260930040006-delivering-90390d
+
+### Reconnaissance and baseline
+
+- Workspace: `D:\\PhpstormProjects\\www\\Delivering`; branch `master` at `44ef4a669958bf1dae60e1ca24973e04a4e06184`, synchronized with `origin/master` before this pass.
+- Pre-existing worktree value preserved: runtime-generated test-key helper work in `tests/Support/` plus three push/JWT tests; the useful intent is to remove committed static private-key fixtures. A pre-existing edit had also copied owner Gating documentation into `.gating/README.md`, which conflicts with the consumer artifact-only contract and must be corrected rather than discarded blindly.
+- Read: repository README, development/production Composer manifests, PHPUnit/PHPStan configuration, current source/config/test surfaces implicated by RED findings, prior CMCP journal, and fresh CanonScanning reports for fingerprint `feb1b95ae0d099eaa56f8ac502dd075402ef18e3e65648f960b574f7dc6a608e`.
+- Mandatory dependency contour checked from Objecting, Cruding, Viewing, Interfacing, Gating and Canonization local repositories. Delivering already declares Objecting/Cruding/Viewing/Interfacing as application dependencies; Inspecting remains external verification only.
+- Canonization textual rules consulted for this pass: Canon001, Canon004, Canon006, Canon020, Canon025, Canon030, Canon031, Canon034, Canon038, Canon040, Canon041, Canon042, Canon045, Canon047, Canon052, Canon054 and Canon055.
+- Target-to-canon mapping: role suffixes must match first technical-role roots; Doctrine persistence classes must end in `Entity`; persistence manager dependencies belong under `src/Repository/`; component-owned YAML uses the `delivery_` subject prefix; standalone Symfony boot and schema-parity surfaces are required; consumer `.gating/` remains artifact-only; human-facing shared-platform prose must not use the Smart Responsor consumer identity as ecosystem identity.
+- Market/enterprise baseline within Delivering responsibility: mature outbound-delivery systems separate provider adapters from application semantics, preserve idempotency and retry hints, authenticate webhooks, maintain receipt/delivery-state persistence, expose operational readiness/queue diagnostics, and treat invalid push tokens as explicit lifecycle feedback. Provider analytics dashboards, campaign orchestration, CRM ownership, notification semantics and generic CRUD remain outside Delivering.
+- RC-critical workstream: preserve the existing private-key-fixture hardening; repair deterministic Canon RED topology, persistence ownership, package/bootstrap/schema-parity/Gating wiring, physical Doctrine naming and neutral documentation; keep tests deterministic and re-run affected verification after mutation.
+- Growth workstream (post-RC): richer provider health telemetry, operator replay/inspection UX, additional provider/channel adapters and deeper maintainability refactors for medium Inspecting findings. These do not block RC unless verification exposes correctness risk.
+- Material risks: broad namespace/class relocation can break autowiring/tests; Entity suffix migration changes PHP type identity and Doctrine metadata; standalone Doctrine/migration verification needs an isolated test database contract; copied `.gating` owner files cannot be destructively removed under this task's destructive-operation prohibition.
+- Gates planned: Composer validate/audit, PHP lint, PHP-CS-Fixer, PHPStan, PHPUnit/coverage, canonical Gating after integration, standalone Symfony command/container/Doctrine applicability checks, post-mutation Inspecting, Git diff/status and publication checks.
+
+### Что имеем? Что осталось?
+
+Фактический baseline, свежий RED backlog, нормативный target-to-canon mapping и ценность незакоммиченной test-key работы установлены. Осталось выполнить remediation, прогнать и починить детерминированные gates, затем интегрировать безопасный change set.
+
 ## engine-20260912082143-delivering-cf8545
 
 ### Iteration 1 — reconnaissance and baseline
@@ -214,4 +234,49 @@ The bounded correctness patch is rebuilt on current master. Remaining work is re
 - Repeated on `fix/delivering-retry-backoff-20260920` from current merged `origin/master`: Composer validate PASS; quality PASS with 100 tests / 282 assertions, PHPStan 0 errors, PHP-CS-Fixer 0 fixable files.
 - Coverage reproduced exactly: Methods 67.89% (74/109), Branches 84.87% (617/727), Lines 94.95% (865/911).
 - Composer audit PASS with no advisories; tracked PHP lint PASS; `git diff --check` PASS.
+
+## 2026-09-30 security and role-first reconciliation RC hardening
+
+### Reconnaissance and baseline
+
+- Task: `engine-20260930034839-delivering-a9ddd2`; workspace `D:\\PhpstormProjects\\www\\Delivering`; initial branch `master` at `44ef4a669958bf1dae60e1ca24973e04a4e06184`, tracking `origin/master` at 0/0 ahead/behind.
+- Preserved pre-existing unrelated dirty state: `.gating/README.md`. It is generated Gating material and is excluded from this task's commit scope.
+- Consumed the supplied CanonScanning evidence before mutation: Inspecting fingerprint `feb1b95ae0d099eaa56f8ac502dd075402ef18e3e65648f960b574f7dc6a608e` reported 10 medium maintainability observations plus a Semgrep timeout; the security report was RED solely for three tracked private-key blocks in push/readiness tests.
+- Re-read Delivering README/composer/test/static-analysis configuration and mandatory Objecting, Cruding, Viewing, Interfacing, Gating, and Canonization contracts/manifests available in the shared workspace.
+- Canonization textual rules mapped for this pass: Canon001 technical-role-first, Canon002 interface-tree mirroring, Canon019 no Domain/Port/Adapter taxonomy, Canon020 typed Symfony role roots, Canon021 Cruding owns generic CRUD; Canonization/Gating secret-out-of-repo policy is also applicable. Delivering remains `App\Delivering\*`, role-first, without local generic CRUD or alternate architecture trees.
+- Runtime dependency contour remains explicit in Delivering Composer metadata: Objecting, Cruding, Viewing, and Interfacing are real package dependencies with local path/symlink development wiring.
+- Market/enterprise benchmark for the Delivering boundary: production delivery adapters require short-lived provider credentials where available, signature verification, idempotent/retry-aware delivery, bounded failure normalization, and secrets outside source control. Growth remains separate: extra providers/channels, richer operator replay/analytics, and throughput UX are post-RC.
+- RC-critical workstream selected: remove repository private-key fixtures without reducing real RS256/ES256 test behavior, then reconcile the already-committed but incomplete role-first namespace migration exposed by optimized Composer autoload.
+
+### Implementation
+
+- Added `tests/Support/DeliveryTestKeyFactory.php`: RSA material is generated ephemerally through OpenSSL with a Windows-safe temporary OpenSSL config fallback; P-256 material is generated ephemerally as SEC1 DER from a runtime scalar and converted to PEM only in memory. No runtime key material is committed.
+- Updated JWT, APNs/FCM provider, and push-readiness tests to consume runtime-generated keys; repository search for `BEGIN PRIVATE KEY` is empty.
+- Rebuilt optimized Composer autoload and found committed PSR-4/namespace drift hidden by stale classmaps. Completed caller/config/test migration to the existing `Verifier`, `Provider`, `ProviderInterface`, `Resolver`, `ResolverInterface`, `Recorder`, `RecorderInterface`, and `Handler` role roots.
+- Renamed `src/Entity/Attempt/DeliveryAttemptEntity.php` to `DeliveryAttempt.php` and `src/Entity/Delivery/DeliveryEntity.php` to `DeliveryDelivery.php`; optimized autoload now completes without PSR-4 warnings.
+- No UI/navigation/presentation behavior changed; browser/mobile visual verification is not applicable.
+
+### Verification
+
+- `composer validate --strict --check-lock` PASS.
+- `composer audit` PASS: no security vulnerability advisories.
+- Optimized `composer dump-autoload -o` PASS with no PSR-4 warnings.
+- Repository `composer quality` PASS: PHP-CS-Fixer 0 fixable files, PHPStan 0 errors, PHPUnit 100 tests / 282 assertions.
+- Independent allowlisted `phpunit` and `phpstan` gates PASS after autoload reconciliation.
+- Changed-PHP lint PASS; `git diff --check` PASS.
+- Coverage PASS and unchanged at Lines 94.95% (865/911), Branches 84.87% (617/727), Methods 67.89% (74/109).
+- Post-mutation Inspecting was invoked through Console MCP; the bounded invocation returned `INSPECTING_FAILED` without stdout/stderr after the longer calls exceeded the execution window. No Inspecting GREEN is fabricated; the deterministic repository gates above are the current acceptance evidence.
+- Exact CanonScanning security producer is not exposed as a target-repository Console MCP check. The original trigger pattern is absent, Composer audit is GREEN, and no broader security PASS is fabricated.
+
+### Что имеем? Что осталось?
+
+Security fixture remediation and the factual role-first/PSR-4 breakage exposed during verification are repaired with deterministic quality gates GREEN. Remaining integration tail: journal-inclusive final diff/status inspection, coherent signed commit excluding the preserved `.gating/README.md`, publication, and post-publish HEAD/upstream verification.
+
+### Concurrent worktree reconciliation
+
+- During this execution window, HEAD remained fixed at `44ef4a669958bf1dae60e1ca24973e04a4e06184`, while the worktree changed outside this task from the initial single dirty `.gating/README.md` path to a set of old-role deletions plus new role-first directories. Reflog confirms no branch/HEAD transition.
+- The concurrent role-first pairs were not blindly absorbed. Each old HEAD file was compared against its new worktree counterpart after applying only the expected canonical namespace/interface substitutions. All 11 pairs are content-equivalent under that mapping: MessageHandler→Handler, Telnyx verifier→Verifier, queue status provider→Provider/ProviderInterface, push token resolver→Resolver/ResolverInterface, and receipt recorders→Recorder/RecorderInterface.
+- The initial `.gating/README.md` dirty path disappeared during the same concurrent worktree activity and is not part of this task's current diff.
+- Because these changes are semantically in-scope, canon-aligned, required by the now-GREEN optimized autoload/tests, and pairwise equivalent rather than independent feature work, they are treated as valuable in-scope reconciliation rather than unrelated user work.
+
 

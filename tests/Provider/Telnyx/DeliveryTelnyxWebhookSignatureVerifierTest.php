@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Delivering\Tests\Provider\Telnyx;
 
-use App\Delivering\Provider\Telnyx\DeliveryTelnyxWebhookSignatureVerifier;
+use App\Delivering\Verifier\Telnyx\DeliveryTelnyxWebhookSignatureVerifier;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 

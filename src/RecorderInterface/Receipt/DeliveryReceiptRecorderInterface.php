@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\ServiceInterface\Command\Receipt;
+namespace App\Delivering\RecorderInterface\Receipt;
 
 use App\Delivering\Message\Command\Receipt\DeliveryProcessReceipt;
 

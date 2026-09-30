@@ -4,12 +4,12 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Service\Command\Receipt;
+namespace App\Delivering\Recorder\Receipt;
 
 use App\Delivering\Entity\Attempt\DeliveryAttempt;
 use App\Delivering\Entity\Delivery\DeliveryDelivery;
 use App\Delivering\Message\Command\Receipt\DeliveryProcessReceipt;
-use App\Delivering\ServiceInterface\Command\Receipt\DeliveryReceiptRecorderInterface;
+use App\Delivering\RecorderInterface\Receipt\DeliveryReceiptRecorderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class DeliveryDoctrineReceiptRecorder implements DeliveryReceiptRecorderInterface

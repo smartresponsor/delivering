@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Provider\Telnyx;
+namespace App\Delivering\Verifier\Telnyx;
 
 use DateTimeImmutable;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\Service\Command\Delivery;
+namespace App\Delivering\Resolver\Delivery;
 
 use App\Delivering\Exception\DeliveryPermanentTransportException;
-use App\Delivering\ServiceInterface\Command\Delivery\DeliveryPushTokenResolverInterface;
+use App\Delivering\ResolverInterface\Delivery\DeliveryPushTokenResolverInterface;
 
 final class DeliveryUnavailablePushTokenResolver implements DeliveryPushTokenResolverInterface
 {

@@ -8,7 +8,7 @@ use App\Delivering\Entity\Attempt\DeliveryAttempt;
 use App\Delivering\Entity\Delivery\DeliveryDelivery;
 use App\Delivering\Enum\DeliveryDeliveryStatus;
 use App\Delivering\Message\Command\Receipt\DeliveryProcessReceipt;
-use App\Delivering\Service\Command\Receipt\DeliveryDoctrineReceiptRecorder;
+use App\Delivering\Recorder\Receipt\DeliveryDoctrineReceiptRecorder;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;

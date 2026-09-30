@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace App\Delivering\ServiceInterface\Query\Queue;
+namespace App\Delivering\ProviderInterface\Queue;
 
 use App\Delivering\ValueObject\Queue\DeliveryQueueStatus;
 
