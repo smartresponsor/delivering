@@ -1,5 +1,12 @@
 # CMCP Orchestration Journal
 
+## 2026-09-30 Gating consumer-surface reconciliation
+
+- Re-read the current Gating owner contract after its policy update. The contract now explicitly states that consumer `.gating/` directories are generated artifact surfaces only; normative configuration and executable policy remain in Gating/Symfony-owned configuration surfaces.
+- Compared that rule with the tracked `Delivering/.gating/README.md`. The file is human-maintained documentation, not a generated report/evidence/cache/checksum artifact, so keeping it tracked under consumer `.gating/` conflicts with the updated contract.
+- Accepted the existing deletion of `.gating/README.md` as the canonical resolution. No generated `.gating` artifacts, unrelated `.gitkeep` files, or `.console-mcp/` runtime evidence are included in this reconciliation.
+
+
 ## engine-20260930040006-delivering-90390d
 
 ### Reconnaissance and baseline
