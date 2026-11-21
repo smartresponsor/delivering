@@ -17,13 +17,17 @@ final class DeliveringBundle extends AbstractBundle
         if ($builder->hasExtension('doctrine')) {
             $builder->prependExtensionConfig('doctrine', [
                 'orm' => [
-                    'mappings' => [
-                        'Delivering' => [
-                            'type' => 'attribute',
-                            'is_bundle' => false,
-                            'dir' => __DIR__.'/Entity',
-                            'prefix' => 'App\\Delivering\\Entity',
-                            'alias' => 'Delivering',
+                    'entity_managers' => [
+                        'postgres' => [
+                            'mappings' => [
+                                'Delivering' => [
+                                    'type' => 'attribute',
+                                    'is_bundle' => false,
+                                    'dir' => __DIR__.'/Entity',
+                                    'prefix' => 'App\Delivering\Entity',
+                                    'alias' => 'Delivering',
+                                ],
+                            ],
                         ],
                     ],
                 ],
